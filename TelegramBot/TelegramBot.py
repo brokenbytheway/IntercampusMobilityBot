@@ -5,6 +5,7 @@ bot = telebot.TeleBot('7162103985:AAEimCQMejkVTqVvcyLul-nZTHVn8wWfOyA')
 @bot.message_handler(commands=['start'])
 
 def main(message):
-    bot.send_message(message.chat.id, 'Пока пока!')
+    bot.send_message(message.chat.id, 'пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ!')
+    bot.send_message('РґРѕ РІСЃС‚СЂРµС‡Рё!')
 
 bot.infinity_polling()
