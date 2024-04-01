@@ -14,10 +14,11 @@ form_data = []
 @bot.message_handler(commands=['start'])
 def start(message):
     # Приветственное сообщение и создание кнопки для заполнения анкеты
+    bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.')
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton('Заполнить анкету')
     markup.add(btn1)
-    bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Пожалуйста, нажмите на кнопку "Заполнить анкету" для начала заполнения анкеты.', reply_markup=markup)
     bot.register_next_step_handler(message, select_course)
 
 def select_course(message):
