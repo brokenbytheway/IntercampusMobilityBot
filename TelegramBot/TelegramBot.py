@@ -12,14 +12,23 @@ worksheet = sheet.sheet1
 # Массив для хранения данных анкеты
 form_data = []
 
-@bot.message_handler(commands=['start', 'back']) #главнок меню
+@bot.message_handler(commands=['start', 'back']) #главное меню
 def start(message):
     # Приветственное сообщение и создание кнопки для заполнения анкеты
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     btn1 = types.KeyboardButton('Заполнить анкету')
     btn2 = types.KeyboardButton('Помощь')
     markup.add(btn1).add(btn2)
-    bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.', reply_markup=markup)
+    if message.text == '/start':
+        bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Перед заполнением анкеты рекомендуется прочитать полезную информацию по кнопке "Помощь"')
+    elif message.text == 'Назад':
+        bot.send_message(message.chat.id, 'Готовы заполнить анкету? Тогда вперёд!', reply_markup=markup)
+    elif message.text.lower() == 'да':
+        bot.send_message(message.chat.id, 'Спасибо, ваша анкета успешно заполнена!', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям', reply_markup=markup)
+        
     bot.register_next_step_handler(message, next_command)
     
 def next_command(message): #переход на следующую команду
@@ -28,7 +37,6 @@ def next_command(message): #переход на следующую команд�
     elif message.text == 'Заполнить анкету':
         select_course(message)
     else:
-        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям')
         start(message)
 
 
@@ -136,8 +144,8 @@ def process_confirmation(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
         # Данные верны
-        bot.send_message(message.chat.id, 'Спасибо, ваша анкета успешно заполнена!', reply_markup=types.ReplyKeyboardRemove())
         worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4]])
+        start(message)
     elif message.text.lower() == 'нет':
         # Данные неверны
         bot.send_message(message.chat.id, 'Пожалуйста, введите данные заново.')
@@ -146,23 +154,22 @@ def process_confirmation(message):
         
 @bot.message_handler(commands=['help']) #помощь
 def help_inf(message):
-    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе вараинты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Особенно рейтинг! Иначе на мобильность не возьмём. :)'
+    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе варианты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Особенно рейтинг! Иначе на мобильность не возьмём. :)'
     feedback = 'Возникли проблемы? Свяжись с разработчиками! \nhttps://t.me/brokenbytheway \nhttps://t.me/Miron12315 \nhttps://t.me/dedbezpasportaideneg'
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1 = types.KeyboardButton('Заполнить анкету')
-    btn2 = types.KeyboardButton('Назад')
-    markup.add(btn1).add(btn2)
-    bot.send_message(message.chat.id, help_info, reply_markup=markup)
-    bot.send_message(message.chat.id, feedback)
+    btn1 = types.KeyboardButton('Назад')
+    markup.add(btn1)
+    if message.text == 'Помощь':
+        bot.send_message(message.chat.id, help_info, reply_markup=markup)
+        bot.send_message(message.chat.id, feedback)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям', reply_markup=markup)
     bot.register_next_step_handler(message, next_command2)
     
 def next_command2(message): #переход на следующую команду
     if message.text == 'Назад':
         start(message)
-    elif message.text == 'Заполнить анкету':
-        select_course(message)
     else:
-        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям')
         help_inf(message)
  
 #@bot.message_handler(commands=['mobility']) #выбор мобильности
