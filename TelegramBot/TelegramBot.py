@@ -1,3 +1,4 @@
+import select
 import telebot
 import gspread
 from telebot import types
@@ -14,12 +15,21 @@ form_data = []
 @bot.message_handler(commands=['start', 'back']) #главнок меню
 def start(message):
     # Приветственное сообщение и создание кнопки для заполнения анкеты
-    bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1 = types.KeyboardButton('/form')
-    btn2 = types.KeyboardButton('/help')
+    btn1 = types.KeyboardButton('Заполнить анкету')
+    btn2 = types.KeyboardButton('Помощь')
     markup.add(btn1).add(btn2)
-    bot.send_message(message.chat.id, 'Пожалуйста, нажмите на кнопку "/form" для начала заполнения анкеты. Для получения дополнительной информации нажмите на кнопку "/help"', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.', reply_markup=markup)
+    bot.register_next_step_handler(message, next_command)
+    
+def next_command(message): #переход на следующую команду
+    if message.text == 'Помощь':
+        help_inf(message)
+    elif message.text == 'Заполнить анкету':
+        select_course(message)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям')
+        start(message)
 
 
 @bot.message_handler(commands=['form']) #заполнение анкеты
@@ -93,8 +103,17 @@ def enter_rating(message):
     bot.register_next_step_handler(message, confirm_data)
 
 def confirm_data(message):
-    # Сохраняем введенный пользователем рейтинг
-    form_data.append(message.text)
+    #Проверяем, корректно ли введён рейтинг пользователем, затем сохраняем его
+    try:
+        if 0 < float(message.text) < 10:
+            form_data.append(message.text)
+        else:
+            bot.send_message(message.chat.id, 'Рейтинг введён некорректно! Повторите ввод. Рейтинг должен быть в диапазоне от 0 до 10, например 7.62')
+            bot.register_next_step_handler(message, confirm_data)
+    except:
+        bot.send_message(message.chat.id, 'Рейтинг введён некорректно! Повторите ввод. Рейтинг должен быть в диапазоне от 0 до 10, например 7.62')
+        bot.register_next_step_handler(message, confirm_data)
+        
     
     # Вывод анкеты для проверки
     confirmation_text = f"Ваша анкета:\n\n" \
@@ -123,15 +142,30 @@ def process_confirmation(message):
         # Данные неверны
         bot.send_message(message.chat.id, 'Пожалуйста, введите данные заново.')
         form_data.clear()
-        start(message)
+        select_course(message)
         
 @bot.message_handler(commands=['help']) #помощь
-def help(message):
-    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе вараинты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Особенно рейтинг! Иначе на мобильность не возьмём. :) Нажми кнопку "/form", чтоб приступить к заполнению анкеты. Кнопка "/back" возвращает в главное меню.'
+def help_inf(message):
+    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе вараинты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Особенно рейтинг! Иначе на мобильность не возьмём. :)'
+    feedback = 'Возникли проблемы? Свяжись с разработчиками! \nhttps://t.me/brokenbytheway \nhttps://t.me/Miron12315 \nhttps://t.me/dedbezpasportaideneg'
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1 = types.KeyboardButton('/form')
-    btn2 = types.KeyboardButton('/back')
+    btn1 = types.KeyboardButton('Заполнить анкету')
+    btn2 = types.KeyboardButton('Назад')
     markup.add(btn1).add(btn2)
     bot.send_message(message.chat.id, help_info, reply_markup=markup)
+    bot.send_message(message.chat.id, feedback)
+    bot.register_next_step_handler(message, next_command2)
+    
+def next_command2(message): #переход на следующую команду
+    if message.text == 'Назад':
+        start(message)
+    elif message.text == 'Заполнить анкету':
+        select_course(message)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям')
+        help_inf(message)
+ 
+#@bot.message_handler(commands=['mobility']) #выбор мобильности
+#def mobility(message):
     
 bot.infinity_polling()
