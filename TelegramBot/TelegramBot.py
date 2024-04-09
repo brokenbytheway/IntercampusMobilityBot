@@ -1,5 +1,6 @@
 from atexit import register
 import re
+import site
 import telebot
 import gspread
 from telebot import types
@@ -67,11 +68,14 @@ def select_direction(message):
         p6 = types.KeyboardButton('Менеджмент')
         p3 = types.KeyboardButton('История')
         p4 = types.KeyboardButton('Юриспруденция')
-        p5 = types.KeyboardButton('Иностранные языки')
+        p7 = types.KeyboardButton('Дизайн')
+        p5 = types.KeyboardButton('Лингвистика')
+        
+        
         markup_direction.row(p0,p1)
         markup_direction.row(p2,p6)
         markup_direction.row(p3,p4)
-        markup_direction.row(p5)
+        markup_direction.row(p5,p7)
         bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
         bot.send_message(message.chat.id, 'Важно! Направление "Разработка инофрмационных систем для бизнеса" разделено на направления "Программная инженерия" и "Бизнес информатика" вследствие разных кодов.')
         bot.send_message(message.chat.id, 'Важно! Направление "Международный бакалавриат по бизнесу и экономике" разделено на направления "Экономика" и "Менеджмент" вследствие разных кодов.')
@@ -80,11 +84,11 @@ def select_direction(message):
         p2 = types.InlineKeyboardButton('Бизнес информатика')
         p3 = types.InlineKeyboardButton('История')
         p4 = types.InlineKeyboardButton('Юриспруденция')
-        p5 = types.InlineKeyboardButton('Иностранные языки')
+        p5 = types.InlineKeyboardButton('Лингвистика')
         p6 = types.InlineKeyboardButton('Экономика')
-        p7 = types.InlineKeyboardButton('Управление бизнесом')
+        p8 = types.InlineKeyboardButton('Дизайн')
         markup_direction.row(p1,p2)
-        markup_direction.row(p6,p7)
+        markup_direction.row(p6,p8)
         markup_direction.row(p3,p4)
         markup_direction.row(p5)
         bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
@@ -176,29 +180,40 @@ def next_command2(message): #переход на следующую команд
     else:
         help_inf(message)
  
-@bot.message_handler(commands=['mobility']) #выбор мобильности
+@bot.message_handler(commands=['mobility']) #выбор мобильности (если придумаете, как сжать этот громадный кусок кода, то сообщите, буду безмерно благодарен)
 def mobility(message):
+    def site(my_url): #функция по созданию кнопки, отсылающей на сайт, чтоб хоть как-то код сократить
+        return types.InlineKeyboardButton('Ознакомиться с программой', url = my_url)
     bot.send_message(message.chat.id, "Исходя из вашего направления, мы можем предложить вам следующие варианты межкампусной мобильности:", reply_markup=types.ReplyKeyboardRemove())
     markupMoscow = types.InlineKeyboardMarkup() #области кнопок для каждого города
+    markupMoscow2 = types.InlineKeyboardMarkup() #их может 2 и более, так как программ с одним кодом в одном городе может быть несколько
     markupNovgorod = types.InlineKeyboardMarkup()
+    markupNovgorod2 = types.InlineKeyboardMarkup()
     markupPetersburg = types.InlineKeyboardMarkup()
     if form_data[1] == 'Программная инженерия':
-        siteMoscow = types.InlineKeyboardButton('Ознакомиться с программой', url = 'https://www.hse.ru/ba/se/')
-        siteNovgorod = types.InlineKeyboardButton('Ознакомиться с программой', url = 'https://nnov.hse.ru/bipm/se/')
-        registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk')
-        registerNovgorod = types.InlineKeyboardButton('Записаться', callback_data='pi_nn')
+        siteMoscow = site('https://www.hse.ru/ba/se/') #эта кнопка ведёт на сайт
+        siteNovgorod1 = site('https://nnov.hse.ru/bipm/se/')
+        siteNovgorod2 = site('https://nnov.hse.ru/ba/cst/')
+        registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk') #эта кнопка по идее должна обеспечивать запись
+        registerNovgorod1 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
+        registerNovgorod2 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn2')
         markupMoscow.row(siteMoscow,registerMoscow)
-        markupNovgorod.row(siteNovgorod,registerNovgorod)
+        markupNovgorod.row(siteNovgorod1,registerNovgorod1)
+        markupNovgorod2.row(siteNovgorod2,registerNovgorod2)
         bot.send_message(message.chat.id, 'Програмная инженерия \nМосква', reply_markup=markupMoscow)
         bot.send_message(message.chat.id, 'Программная инженерия (очно-заочное обучение) \nНижний Новгород', reply_markup=markupNovgorod)
-    elif form_data[1] == 'Бизнес информатика':
-        siteMoscow = types.InlineKeyboardButton('Ознакомиться с программой', url = 'https://www.hse.ru/ba/bi/')
-        siteNovgorod = types.InlineKeyboardButton('Ознакомиться с программой', url = 'https://nnov.hse.ru/ba/cst/')
-        sitePetersburg = types.InlineKeyboardButton('Ознакомиться с программой', url = 'https://spb.hse.ru/ba/bi/')
+        bot.send_message(message.chat.id, 'Компьютерные науки и технологии \nНижний Новгород', reply_markup=markupNovgorod2)
+    elif form_data[1] == 'Бизнес информатика': #пока без кнопок "записаться", всё равно не знаю, как её активировать
+        siteMoscow = site('https://www.hse.ru/ba/bi/')
+        siteMoscow2 = site('https://www.hse.ru/ba/digital/')
+        siteNovgorod = site('https://nnov.hse.ru/ba/cst/')
+        sitePetersburg = site('https://spb.hse.ru/ba/bi/')
         markupMoscow.row(siteMoscow)
+        markupMoscow2.row(siteMoscow2)
         markupNovgorod.row(siteNovgorod)
         markupPetersburg.row(sitePetersburg)
         bot.send_message(message.chat.id, 'Бизнес информатика \nМосква', reply_markup=markupMoscow)
+        bot.send_message(message.chat.id, 'Управление цифровым продуктом \nМосква', reply_markup=markupMoscow2)
         bot.send_message(message.chat.id, 'Компьютерные науки и технологии \nНижний Новгород', reply_markup=markupNovgorod)
         bot.send_message(message.chat.id, 'Бизнес-информатика \nСанкт-Петербург', reply_markup=markupPetersburg)
     elif form_data[1] == 'Экономика':
@@ -209,9 +224,15 @@ def mobility(message):
         pass
     elif form_data[1] == 'Юриспруденция':
         pass
-    elif form_data[1] == 'Иностранные языки':
-        pass
-    elif form_data[1] == 'Управление бизнесом':
+    elif form_data[1] == 'Лингвистика':
+        siteMoscow = site('https://www.hse.ru/ba/lang/')
+        siteNovgorod = site('https://nnov.hse.ru/ba/ibc/')
+        markupMoscow.add(siteMoscow)
+        markupNovgorod.add(siteNovgorod)
+        bot.send_message(message.chat.id, 'Иностранные языки и межкультурная коммуникация \nМосква', reply_markup=markupMoscow)
+        bot.send_message(message.chat.id, 'Иностранные языки и межкультурная бизнес-коммуникация \nНижний Новгород', reply_markup=markupNovgorod)
+        
+    elif form_data[1] == 'Дизайн':
         pass
 
 @bot.callback_query_handler(func=lambda call: True)
