@@ -192,13 +192,13 @@ def mobility(message):
     markupPetersburg = types.InlineKeyboardMarkup()
     if form_data[1] == 'Программная инженерия':
         siteMoscow = site('https://www.hse.ru/ba/se/') #эта кнопка ведёт на сайт
-        siteNovgorod1 = site('https://nnov.hse.ru/bipm/se/')
+        siteNovgorod = site('https://nnov.hse.ru/bipm/se/')
         siteNovgorod2 = site('https://nnov.hse.ru/ba/cst/')
         registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk') #эта кнопка по идее должна обеспечивать запись
-        registerNovgorod1 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
+        registerNovgorod = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
         registerNovgorod2 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn2')
         markupMoscow.row(siteMoscow,registerMoscow)
-        markupNovgorod.row(siteNovgorod1,registerNovgorod1)
+        markupNovgorod.row(siteNovgorod,registerNovgorod)
         markupNovgorod2.row(siteNovgorod2,registerNovgorod2)
         bot.send_message(message.chat.id, 'Програмная инженерия \nМосква', reply_markup=markupMoscow)
         bot.send_message(message.chat.id, 'Программная инженерия (очно-заочное обучение) \nНижний Новгород', reply_markup=markupNovgorod)
@@ -221,7 +221,18 @@ def mobility(message):
     elif form_data[1] == 'Менеджмент':
         pass
     elif form_data[1] == 'История':
-        pass
+        siteMoscow = site('https://www.hse.ru/ba/hist/') #эта кнопка ведёт на сайт
+        siteMoscow2 = site('https://www.hse.ru/ba/antiq/')
+        sitePetersburg = site('https://spb.hse.ru/ba/hist/')
+        registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk') #эта кнопка по идее должна обеспечивать запись
+        registerMoscow2 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
+        registerPetersburg = types.InlineKeyboardButton('Записаться', callback_data='pi_nn2')
+        markupMoscow.row(siteMoscow,registerMoscow)
+        markupMoscow2.row(siteMoscow2,registerMoscow2)
+        markupPetersburg.row(sitePetersburg,registerPetersburg)
+        bot.send_message(message.chat.id, 'История \nМосква', reply_markup=markupMoscow)
+        bot.send_message(message.chat.id, 'Античность \nМосква', reply_markup=markupMoscow2)
+        bot.send_message(message.chat.id, 'История \nСанкт-Петербург', reply_markup=markupPetersburg)
     elif form_data[1] == 'Юриспруденция':
         pass
     elif form_data[1] == 'Лингвистика':
