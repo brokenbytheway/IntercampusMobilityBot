@@ -1,6 +1,3 @@
-from atexit import register
-import re
-import site
 import telebot
 import gspread
 from telebot import types
@@ -182,66 +179,46 @@ def next_command2(message): #переход на следующую команд
  
 @bot.message_handler(commands=['mobility']) #выбор мобильности (если придумаете, как сжать этот громадный кусок кода, то сообщите, буду безмерно благодарен)
 def mobility(message):
-    def site(my_url): #функция по созданию кнопки, отсылающей на сайт, чтоб хоть как-то код сократить
-        return types.InlineKeyboardButton('Ознакомиться с программой', url = my_url)
+    
+    def mobility_info(name, city, my_url, b, p, cbd): #функция для вывода информации об одном направлении
+        markup = types.InlineKeyboardMarkup()
+        site = types.InlineKeyboardButton('Ознакомиться с программой', url = my_url)
+        register = types.InlineKeyboardButton('Записаться', callback_data = cbd)
+        markup.row(site, register)
+        text = f"*Направление: {name}\n*" \
+               f"*Город: {city}\n*" \
+               f"Бюджетных мест: {b}\n" \
+               f"Платных мест: {p}"
+        bot.send_message(message.chat.id, text, reply_markup=markup, parse_mode='Markdown')
+        
+    #mobility_info(название направления, город, ссылка на сайт, кол-во бюджетных мест, кол-во платных мест, колбэк дата)  
+
     bot.send_message(message.chat.id, "Исходя из вашего направления, мы можем предложить вам следующие варианты межкампусной мобильности:", reply_markup=types.ReplyKeyboardRemove())
-    markupMoscow = types.InlineKeyboardMarkup() #области кнопок для каждого города
-    markupMoscow2 = types.InlineKeyboardMarkup() #их может 2 и более, так как программ с одним кодом в одном городе может быть несколько
-    markupNovgorod = types.InlineKeyboardMarkup()
-    markupNovgorod2 = types.InlineKeyboardMarkup()
-    markupPetersburg = types.InlineKeyboardMarkup()
     if form_data[1] == 'Программная инженерия':
-        siteMoscow = site('https://www.hse.ru/ba/se/') #эта кнопка ведёт на сайт
-        siteNovgorod = site('https://nnov.hse.ru/bipm/se/')
-        siteNovgorod2 = site('https://nnov.hse.ru/ba/cst/')
-        registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk') #эта кнопка по идее должна обеспечивать запись
-        registerNovgorod = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
-        registerNovgorod2 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn2')
-        markupMoscow.row(siteMoscow,registerMoscow)
-        markupNovgorod.row(siteNovgorod,registerNovgorod)
-        markupNovgorod2.row(siteNovgorod2,registerNovgorod2)
-        bot.send_message(message.chat.id, 'Програмная инженерия \nМосква', reply_markup=markupMoscow)
-        bot.send_message(message.chat.id, 'Программная инженерия (очно-заочное обучение) \nНижний Новгород', reply_markup=markupNovgorod)
-        bot.send_message(message.chat.id, 'Компьютерные науки и технологии \nНижний Новгород', reply_markup=markupNovgorod2)
-    elif form_data[1] == 'Бизнес информатика': #пока без кнопок "записаться", всё равно не знаю, как её активировать
-        siteMoscow = site('https://www.hse.ru/ba/bi/')
-        siteMoscow2 = site('https://www.hse.ru/ba/digital/')
-        siteNovgorod = site('https://nnov.hse.ru/ba/cst/')
-        sitePetersburg = site('https://spb.hse.ru/ba/bi/')
-        markupMoscow.row(siteMoscow)
-        markupMoscow2.row(siteMoscow2)
-        markupNovgorod.row(siteNovgorod)
-        markupPetersburg.row(sitePetersburg)
-        bot.send_message(message.chat.id, 'Бизнес информатика \nМосква', reply_markup=markupMoscow)
-        bot.send_message(message.chat.id, 'Управление цифровым продуктом \nМосква', reply_markup=markupMoscow2)
-        bot.send_message(message.chat.id, 'Компьютерные науки и технологии \nНижний Новгород', reply_markup=markupNovgorod)
-        bot.send_message(message.chat.id, 'Бизнес-информатика \nСанкт-Петербург', reply_markup=markupPetersburg)
+        mobility_info('Программная инженерия', 'Москва', 'https://www.hse.ru/ba/se/', 150, 80, 'pi_msk')
+        mobility_info('Программная инженерия (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/bipm/se/', '???', '???', 'pi_nn')
+        mobility_info('Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 50, 35, 'cs_nn')
+        
+    elif form_data[1] == 'Бизнес информатика':
+        mobility_info('Бизнес информатика', 'Москва', 'https://www.hse.ru/ba/bi/', 130, 80, 'bi_msk')
+        mobility_info('Управление цифровым продуктом', 'Москва', 'https://www.hse.ru/ba/digital/', 0, 80, 'dp_msk')
+        mobility_info('Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 65, 30, 'cs_nn')
+        mobility_info('Бизнес-информатика', 'Санкт-Петербург', 'https://nnov.hse.ru/ba/cst/', 25, 25, 'bi_spv')
+
     elif form_data[1] == 'Экономика':
         pass
     elif form_data[1] == 'Менеджмент':
         pass
     elif form_data[1] == 'История':
-        siteMoscow = site('https://www.hse.ru/ba/hist/') #эта кнопка ведёт на сайт
-        siteMoscow2 = site('https://www.hse.ru/ba/antiq/')
-        sitePetersburg = site('https://spb.hse.ru/ba/hist/')
-        registerMoscow = types.InlineKeyboardButton('Записаться', callback_data= 'pi_msk') #эта кнопка по идее должна обеспечивать запись
-        registerMoscow2 = types.InlineKeyboardButton('Записаться', callback_data='pi_nn1')
-        registerPetersburg = types.InlineKeyboardButton('Записаться', callback_data='pi_nn2')
-        markupMoscow.row(siteMoscow,registerMoscow)
-        markupMoscow2.row(siteMoscow2,registerMoscow2)
-        markupPetersburg.row(sitePetersburg,registerPetersburg)
-        bot.send_message(message.chat.id, 'История \nМосква', reply_markup=markupMoscow)
-        bot.send_message(message.chat.id, 'Античность \nМосква', reply_markup=markupMoscow2)
-        bot.send_message(message.chat.id, 'История \nСанкт-Петербург', reply_markup=markupPetersburg)
+        mobility_info('История', 'Москва', 'https://www.hse.ru/ba/hist/', 70, 15, 'hi_msk')
+        mobility_info('Античность', 'Москва', 'https://www.hse.ru/ba/antiq/', 10, 5, 'a_msk')
+        mobility_info('История', 'Санкт-Петербург', 'https://spb.hse.ru/ba/hist/', 30, 30, 'hi_spb')
+
     elif form_data[1] == 'Юриспруденция':
         pass
     elif form_data[1] == 'Лингвистика':
-        siteMoscow = site('https://www.hse.ru/ba/lang/')
-        siteNovgorod = site('https://nnov.hse.ru/ba/ibc/')
-        markupMoscow.add(siteMoscow)
-        markupNovgorod.add(siteNovgorod)
-        bot.send_message(message.chat.id, 'Иностранные языки и межкультурная коммуникация \nМосква', reply_markup=markupMoscow)
-        bot.send_message(message.chat.id, 'Иностранные языки и межкультурная бизнес-коммуникация \nНижний Новгород', reply_markup=markupNovgorod)
+        mobility_info('Иностранные языки и межкультурная коммуникация', 'Москва', 'https://www.hse.ru/ba/lang/', 35, 150, 'la_msk')
+        mobility_info('Иностранные языки и межкультурная бизнес-коммуникация', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ibc/', 0, 60, 'la_nn')
         
     elif form_data[1] == 'Дизайн':
         pass
