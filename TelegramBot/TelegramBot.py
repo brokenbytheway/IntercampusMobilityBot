@@ -245,6 +245,30 @@ ib_spb = ['Международный бакалавриат по бизнесу
 we_msk = ['Мировая экономика', 'Москва', 'https://www.hse.ru/ba/we/', 'we_msk']
 eco_msk = ['Экономика', 'Москва', 'https://www.hse.ru/ba/economics/', 'eco_msk']
 eda_msk = ['Экономика и анализ данных', 'Москва', 'https://www.hse.ru/ba/eda/', 'eda_msk']
+eco_nn = ['Экономика и бизнес (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/economics/economics/', 'eco_nn']
+ea_msk = ['Экономический анализ', 'Москва', 'https://www.hse.ru/ba/ea/', 'ea_msk']
+ma_msk = ['Маркетинг и рыночная аналитика', 'Москва', 'https://www.hse.ru/ba/marketing/', 'ma_msk']
+ib_spb = ['Международный бакалавриат по бизнесу и экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/interbac/', 'ib_spb']
+ib_nn = ['Международный бакалавриат по бизнесу и экономике', 'Нижний Новгород', 'https://nnov.hse.ru/ba/interbac/', 'ib_nn']
+ib_msk = ['Международный бизнес', 'Москва', 'https://www.hse.ru/ba/ib/', 'ib_msk']
+bba_msk = ['Управление бизнесом', 'Москва', 'https://www.hse.ru/ba/bba/', 'bba_msk']
+bu_spb = ['Управление бизнесом', 'Санкт-Петербург', 'https://spb.hse.ru/ba/business/', 'bu_spb']
+log_msk = ['Управление цепями поставок и бизнес-аналитика', 'Москва', 'https://www.hse.ru/ba/logistics/', 'log_msk']
+dm_nn = ['Цифровой маркетинг', 'Нижний Новгород', 'https://nnov.hse.ru/ba/dm/', 'dm_nn']
+ant_msk = ['Античность', 'Москва', 'https://www.hse.ru/ba/antiq/', 'ant_msk']
+his_spb = ['История', 'Санкт-Петербург', 'https://spb.hse.ru/ba/hist/', 'his_spb']
+his_msk = ['История', 'Москва', 'https://www.hse.ru/ba/hist/', 'his_msk']
+law_msk = ['Юриспруденция', 'Москва', 'https://www.hse.ru/ba/law/', 'law_msk']
+law_nn = ['Юриспруденция', 'Нижний Новгород', 'https://nnov.hse.ru/ba/law/', 'law_nn']
+law_spb = ['Юриспруденция', 'Санкт-Петербург', 'https://spb.hse.ru/ba/law/', 'law_spb']
+dop_msk = ['Юриспруденция: правовое регулирование бизнеса', 'Москва', 'https://pravo.hse.ru/doplaw/', 'dop_msk']
+dl_msk = ['Юриспруденция: цифровой юрист', 'Москва', 'https://www.hse.ru/ba/dlawyer/', 'dl_msk']
+ibc_nn = ['Иностранные языки и межкультурная бизнес-коммуникация', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ibc/', 'ibc_nn']
+la_msk = ['Иностранные языки и межкультурная коммуникация', 'Москва', 'https://www.hse.ru/ba/lang/', 'la_msk']
+des_nn = ['Дизайн', 'Нижний Новгород', 'https://design.hse.ru/dir/design', 'des_nn']
+des_spb = ['Дизайн', 'Санкт-Петербург', 'https://spb.hse.ru/ba/designs/', 'des_spb']
+des_msk = ['Дизайн', 'Москва', 'https://design.hse.ru/ba/program/design', 'des_msk']
+fash_msk = ['Мода', 'Москва', 'https://design.hse.ru/ba/program/fashion', 'fash_msk']
 # -------------------------------------------------------------------------------------------
 @bot.message_handler(commands=['mobility']) #выбор мобильности
 def mobility(message):
@@ -281,41 +305,41 @@ def mobility(message):
         mobility_info(ib_spb)
         mobility_info(we_msk)
         mobility_info(eco_msk)
-        mobility_info('Экономика и анализ данных', 'Москва', 'https://www.hse.ru/ba/eda/', 30, 30, '4 года', 'eda_msk')
-        mobility_info('Экономика и бизнес (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/economics/economics/', 0, 40, '4,5 года', 'eco_nn')
-        mobility_info('Экономический анализ', 'Москва', 'https://www.hse.ru/ba/ea/', 0, 20, '4 года', 'ea_msk')
+        mobility_info(eda_msk)
+        mobility_info(eco_nn)
+        mobility_info(ea_msk)
     
     elif form_data[1] == 'Менеджмент':
-         mobility_info('Маркетинг и рыночная аналитика', 'Москва', 'https://www.hse.ru/ba/marketing/', 20, 100, '4 года', 'ma_msk')
-         mobility_info('Международный бакалавриат по бизнесу и экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/interbac/', 60, 60, '4 года', 'ib_spb')
-         mobility_info('Международный бакалавриат по бизнесу и экономике', 'Нижний Новгород', 'https://nnov.hse.ru/ba/interbac/', 120, 80, '4 года', 'ib_nn')
-         mobility_info('Международный бизнес', 'Москва', 'https://www.hse.ru/ba/ib/', 0, 50, '4 года', 'ib_msk')
-         mobility_info('Управление бизнесом', 'Москва', 'https://www.hse.ru/ba/bba/', 30, 170, '4 года', 'bba_msk')
-         mobility_info('Управление бизнесом', 'Санкт-Петербург', 'https://spb.hse.ru/ba/business/', 60, 60, '4 года', 'bu_spb')
-         mobility_info('Управление цепями поставок и бизнес-аналитика', 'Москва', 'https://www.hse.ru/ba/logistics/', 30, 50, '4 года', 'log_msk')
-         mobility_info('Цифровой маркетинг', 'Нижний Новгород', 'https://nnov.hse.ru/ba/dm/', 0, 45, '4 года', 'dm_nn')
+         mobility_info(ma_msk)
+         mobility_info(ib_spb)
+         mobility_info(ib_nn)
+         mobility_info(ib_msk)
+         mobility_info(bba_msk)
+         mobility_info(bu_spb)
+         mobility_info(log_msk)
+         mobility_info(dm_nn)
 
     elif form_data[1] == 'История':
-        mobility_info('Античность', 'Москва', 'https://www.hse.ru/ba/antiq/', 10, 5, '5 лет', 'ant_msk')
-        mobility_info('История', 'Санкт-Петербург', 'https://spb.hse.ru/ba/hist/', 30, 30, '5 лет', 'his_spb')
-        mobility_info('История', 'Москва', 'https://www.hse.ru/ba/hist/', 70, 15, '5 лет', 'his_msk')
+        mobility_info(ant_msk)
+        mobility_info(his_spb)
+        mobility_info(his_msk)
 
     elif form_data[1] == 'Юриспруденция':
-        mobility_info('Юриспруденция', 'Москва', 'https://www.hse.ru/ba/law/', 150, 90, '5 лет', 'law_msk')
-        mobility_info('Юриспруденция', 'Нижний Новгород', 'https://nnov.hse.ru/ba/law/', 55, 45, '5 лет', 'law_nn')
-        mobility_info('Юриспруденция', 'Санкт-Петербург', 'https://spb.hse.ru/ba/law/', 90, 90, '5 лет', 'law_spb')
-        mobility_info('Юриспруденция: правовое регулирование бизнеса', 'Москва', 'https://pravo.hse.ru/doplaw/', 0, 30, '5,5 лет', 'dop_msk')
-        mobility_info('Юриспруденция: цифровой юрист', 'Москва', 'https://www.hse.ru/ba/dlawyer/', 30, 30, '5 лет', 'dl_msk')
+        mobility_info(law_msk)
+        mobility_info(law_nn)
+        mobility_info(law_spb)
+        mobility_info(dop_msk)
+        mobility_info(dl_msk)
 
     elif form_data[1] == 'Лингвистика':
-        mobility_info('Иностранные языки и межкультурная бизнес-коммуникация', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ibc/', 0, 60, '4 года', 'ibc_nn')
-        mobility_info('Иностранные языки и межкультурная коммуникация', 'Москва', 'https://www.hse.ru/ba/lang/', 35, 150, '4 года', 'la_msk')
+        mobility_info(ibc_nn)
+        mobility_info(la_msk)
         
     elif form_data[1] == 'Дизайн':
-        mobility_info('Дизайн', 'Нижний Новгород', 'https://design.hse.ru/dir/design', 0, 65, '4 года', 'des_nn')
-        mobility_info('Дизайн', 'Санкт-Петербург', 'https://spb.hse.ru/ba/designs/', 20, 110, '4 года', 'des_spb')
-        mobility_info('Дизайн', 'Москва', 'https://design.hse.ru/ba/program/design', 65, 350, '4 года', 'des_msk')
-        mobility_info('Мода', 'Москва', 'https://design.hse.ru/ba/program/fashion', 0, 80, '4 года', 'fash_msk')
+        mobility_info(des_nn)
+        mobility_info(des_spb)
+        mobility_info(des_msk)
+        mobility_info(fash_msk)
 is_submitted = False
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
@@ -323,7 +347,7 @@ def callback_inline(call): #осуществление записи на моб�
     def fill_table(form_data, mob):
         global is_submitted
         worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6], form_data[7], mob[0], mob[1], form_data[8]])
-        bot.send_message(call.message.chat.id, f'Вы успешно записались на обрзовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[8]}!')
+        bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[8]}!')
         is_submitted = True
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
@@ -362,4 +386,52 @@ def callback_inline(call): #осуществление записи на моб�
                 fill_table(form_data, eco_msk)
             elif call.data == "eda_msk":
                 fill_table(form_data, eda_msk)
+            elif call.data == "eco_nn":
+                fill_table(form_data, eco_nn)
+            elif call.data == "ea_msk":
+                fill_table(form_data, ea_msk)
+            elif call.data == "ma_msk":
+                fill_table(form_data, ma_msk)
+            elif call.data == "ib_spb":
+                fill_table(form_data, ib_spb)
+            elif call.data == "ib_nn":
+                fill_table(form_data, ib_nn)
+            elif call.data == "ib_msk":
+                fill_table(form_data, ib_msk)
+            elif call.data == "bba_msk":
+                fill_table(form_data, bba_msk)
+            elif call.data == "bu_spb":
+                fill_table(form_data, bu_spb)
+            elif call.data == "log_msk":
+                fill_table(form_data, log_msk)
+            elif call.data == "dm_nn":
+                fill_table(form_data, dm_nn)
+            elif call.data == "ant_msk":
+                fill_table(form_data, ant_msk)
+            elif call.data == "his_spb":
+                fill_table(form_data, his_spb)
+            elif call.data == "his_msk":
+                fill_table(form_data, his_msk)
+            elif call.data == "law_msk":
+                fill_table(form_data, law_msk)
+            elif call.data == "law_nn":
+                fill_table(form_data, law_nn)
+            elif call.data == "law_spb":
+                fill_table(form_data, law_spb)
+            elif call.data == "dop_msk":
+                fill_table(form_data, dop_msk)
+            elif call.data == "dl_msk":
+                fill_table(form_data, dl_msk)
+            elif call.data == "ibc_nn":
+                fill_table(form_data, ibc_nn)
+            elif call.data == "la_msk":
+                fill_table(form_data, la_msk)
+            elif call.data == "des_nn":
+                fill_table(form_data, des_nn)
+            elif call.data == "des_spb":
+                fill_table(form_data, des_spb)
+            elif call.data == "des_msk":
+                fill_table(form_data, des_msk)
+            elif call.data == "fash_msk":
+                fill_table(form_data, fash_msk)
 bot.infinity_polling()
