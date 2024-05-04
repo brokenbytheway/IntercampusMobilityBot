@@ -105,17 +105,37 @@ def enter_firstname(message):
     
     # Запрос имени
     bot.send_message(message.chat.id, 'Введите ваше имя:')
-    bot.register_next_step_handler(message, enter_rating)
+    bot.register_next_step_handler(message, enter_secondname)
 
-def enter_rating(message):
+def enter_secondname(message):
     # Сохраняем введенное пользователем имя
     form_data.append(message.text)
     
-    # Запрос рейтинга
-    bot.send_message(message.chat.id, 'Введите ваш рейтинг (например, 7.62):')
-    bot.register_next_step_handler(message, confirm_data)
+    # Запрос отчества
+    bot.send_message(message.chat.id, 'Введите ваше отчество:')
+    bot.register_next_step_handler(message, enter_hsemail)
 
-def confirm_data(message):
+def enter_hsemail(message):
+    # Сохраняем введенное пользователем отчество
+    form_data.append(message.text)
+    
+    # Запрос корпоративной почты
+    bot.send_message(message.chat.id, 'Введите адрес вашей корпоративной почты (учтите, что адрес почты должен оканчиваться на "@edu.hse.ru":')
+    bot.register_next_step_handler(message, enter_rating)
+
+def enter_rating(message):
+    if message.text[-11:] == "@edu.hse.ru": #проверка на правильность ввода корпоративной почты
+        # Сохраняем введенное пользователем имя
+        form_data.append(message.text)
+    
+        # Запрос рейтинга
+        bot.send_message(message.chat.id, 'Введите ваш рейтинг (например, 7.62):')
+        bot.register_next_step_handler(message, was_or_not)
+    else:
+        bot.send_message(message.chat.id, 'Адрес вашей корпоративной почты введён некорректно! Повторите ввод. Адрес почты должен оканчиваться на "@edu.hse.ru".')
+        bot.register_next_step_handler(message, enter_rating)
+        
+def was_or_not(message):
     #Проверяем, корректно ли введён рейтинг пользователем, затем сохраняем его
     try:
         if 0 < float(message.text) < 10:
@@ -126,15 +146,47 @@ def confirm_data(message):
     except:
         bot.send_message(message.chat.id, 'Рейтинг введён некорректно! Повторите ввод. Рейтинг должен быть в диапазоне от 0 до 10, например 7.62')
         bot.register_next_step_handler(message, confirm_data)
-        
     
+    # Узнаём у пользователя, бывал ли он на мобильности ранее
+    markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    btn1= types.KeyboardButton('Да')
+    btn2= types.KeyboardButton('Нет')
+    markup_was.row(btn1,btn2)
+    bot.send_message(message.chat.id, 'Принимали ли вы участие в межкампусной мобильности ранее?', reply_markup=markup_was)
+    bot.register_next_step_handler(message, enter_period)
+
+def enter_period(message):
+    # Сохраняем введенный пользователем ответ
+    form_data.append(message.text)
+    if message.text == 'Да':
+        bot.send_message(message.chat.id, 'Учтите, что при отборе студентов на мобильность высшим приоритетом обладают студенты, ранее не принимавшие участие в мобильности')
+    # Узнаём у пользователя, на какой срок он собирается на мобильность
+    markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    if form_data[0] == '4': 
+        btn1= types.KeyboardButton('2 модуля')
+        btn2= types.KeyboardButton('3 модуля')
+    else:
+        btn1= types.KeyboardButton('2 модуля')
+        btn2= types.KeyboardButton('4 модуля')
+    markup_was.row(btn1,btn2)
+    bot.send_message(message.chat.id, 'На какой срок вы собираетесь отправиться на мобильность?', reply_markup=markup_was)
+    bot.register_next_step_handler(message, confirm_data)
+        
+
+def confirm_data(message):
+    # Сохраняем введенный пользователем ответ
+    form_data.append(message.text)
     # Вывод анкеты для проверки
     confirmation_text = f"Ваша анкета:\n\n" \
                         f"Курс: {form_data[0]}\n" \
                         f"Направление: {form_data[1]}\n" \
                         f"Фамилия: {form_data[2]}\n" \
                         f"Имя: {form_data[3]}\n" \
-                        f"Рейтинг: {form_data[4]}\n\n" \
+                        f"Отчество: {form_data[4]}\n" \
+                        f"Корпоративная почта: {form_data[5]}\n" \
+                        f"Рейтинг: {form_data[6]}\n" \
+                        f"Посещал ли мобильность ранее: {form_data[7]}\n" \
+                        f"Срок текущей мобильности: {form_data[8]}\n\n" \
                         f"Данные верны?"
     
     # Создание кнопок для подтверждения данных
@@ -143,13 +195,13 @@ def confirm_data(message):
     no = types.KeyboardButton('Нет')
     markup_confirmation.row(yes,no)
     bot.send_message(message.chat.id, confirmation_text, reply_markup=markup_confirmation)
-    bot.register_next_step_handler(message, process_confirmation)
+    bot.register_next_step_handler(message, form_is_correct)
 
-def process_confirmation(message):
+def form_is_correct(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
         # Данные верны
-        worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4]])
+        #worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6]])
         mobility(message)
     elif message.text.lower() == 'нет':
         # Данные неверны
@@ -176,47 +228,59 @@ def next_command2(message): #переход на следующую команд
         start(message)
     else:
         help_inf(message)
- 
-@bot.message_handler(commands=['mobility']) #выбор мобильности (если придумаете, как сжать этот громадный кусок кода, то сообщите, буду безмерно благодарен)
+ # ---------------------- ДАННЫЕ О НАПРАВЛЕНИЯХ ДЛЯ МОБИЛЬНОСТИ -----------------------------
+drip_msk = ['Дизайн и разработка информационных продуктов', 'Москва', 'https://www.hse.ru/ba/drip/', 'drip_msk']
+cst_nn = ['Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 'cst_nn']
+se_msk = ['Программная инженерия', 'Москва', 'https://www.hse.ru/ba/se/', 'se_msk']
+se_nn = ['Программная инженерия (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/bipm/se/', 'se_nn']
+ait_nn = ['Технологии искусственного и дополненного интеллекта', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ait/', 'ait_nn']
+bi_msk = ['Бизнес-информатика', 'Москва', 'https://www.hse.ru/ba/bi/', 'bi_msk']
+bi_spb = ['Бизнес-информатика', 'Санкт-Петербург', 'https://spb.hse.ru/ba/bi/', 'bi_spb']
+cst_nn = ['Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 'cst_nn']
+dig_msk = ['Управление цифровым продуктом', 'Москва', 'https://www.hse.ru/ba/digital/', 'dig_msk']
+ed_spb = ['Аналитика в экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/economicdata/', 'ed_spb']
+icef_msk = ['Международная программа по экономике и финансам', 'Москва', 'https://www.hse.ru/ba/icef/', 'icef_msk']
+ib_nn = ['Международный бакалавриат по бизнесу и экономике', 'Нижний Новгород', 'https://nnov.hse.ru/ba/interbac/', 'ib_nn']
+ib_spb = ['Международный бакалавриат по бизнесу и экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/interbac/', 'ib_spb']
+we_msk = ['Мировая экономика', 'Москва', 'https://www.hse.ru/ba/we/', 'we_msk']
+eco_msk = ['Экономика', 'Москва', 'https://www.hse.ru/ba/economics/', 'eco_msk']
+eda_msk = ['Экономика и анализ данных', 'Москва', 'https://www.hse.ru/ba/eda/', 'eda_msk']
+# -------------------------------------------------------------------------------------------
+@bot.message_handler(commands=['mobility']) #выбор мобильности
 def mobility(message):
     
-    def mobility_info(name, city, my_url, b, p, t, cbd): #функция для вывода информации об одном направлении
+    def mobility_info(mob): #функция для вывода информации об одном направлении
         markup = types.InlineKeyboardMarkup()
-        site = types.InlineKeyboardButton('Ознакомиться с программой', url = my_url)
-        register = types.InlineKeyboardButton('Записаться', callback_data = cbd)
+        site = types.InlineKeyboardButton('Ознакомиться с программой', url = mob[2])
+        register = types.InlineKeyboardButton('Записаться', callback_data = mob[3])
         markup.row(site, register)
-        text = f"*Программа: {name}\n*" \
-               f"*Город: {city}\n*" \
-               f"Бюджетных мест: {b}\n" \
-               f"Платных мест: {p}\n" \
-               f"Продолжительность обучения: {t}"
+        text = f"*Программа: {mob[0]}\n*" \
+               f"*Город: {mob[1]}\n*"
         bot.send_message(message.chat.id, text, reply_markup=markup, parse_mode='Markdown')
         
     #mobility_info(название программы, город, ссылка на сайт, кол-во бюджетных мест, кол-во платных мест, продолжительность обучения, колбэк дата)  
 
     bot.send_message(message.chat.id, "Исходя из вашего направления, мы можем предложить вам следующие варианты межкампусной мобильности:", reply_markup=types.ReplyKeyboardRemove())
     if form_data[1] == 'Программная инженерия':
-        mobility_info('Дизайн и разработка информационных продуктов', 'Москва', 'https://www.hse.ru/ba/drip/', 0, 50, '4 года', 'drip_msk')
-        mobility_info('Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 50, 35, '4 года', 'cst_nn')
-        mobility_info('Программная инженерия', 'Москва', 'https://www.hse.ru/ba/se/', 150, 80, '4 года', 'se_msk')
-        mobility_info('Программная инженерия (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/bipm/se/', '???', '???', '4,5 года', 'se_nn')
-        mobility_info('Технологии искусственного и дополненного интеллекта', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ait/', 10, 40, '4 года', 'ait_nn')
+        mobility_info(drip_msk)
+        mobility_info(cst_nn)
+        mobility_info(se_msk)
+        mobility_info(se_nn)
+        mobility_info(ait_nn)
         
     elif form_data[1] == 'Бизнес-информатика':
-        mobility_info('Бизнес-информатика', 'Москва', 'https://www.hse.ru/ba/bi/', 130, 80, '4 года', 'bi_msk')
-        mobility_info('Бизнес-информатика', 'Санкт-Петербург', 'https://spb.hse.ru/ba/bi/', 25, 25, '4 года', 'bi_spb')
-        mobility_info('Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 65, 30, '4 года', 'cst_nn')
-        mobility_info('Управление цифровым продуктом', 'Москва', 'https://www.hse.ru/ba/digital/', 0, 80, '4 года', 'dig_msk')
+        mobility_info(bi_msk)
+        mobility_info(bi_spb)
+        mobility_info(cst_nn)
+        mobility_info(dig_msk)
 
     elif form_data[1] == 'Экономика':
-        mobility_info('Аналитика в экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/economicdata/', 60, 60, '4 года', 'ed_spb')
-        mobility_info('Международная программа по экономике и финансам', 'Москва', 'https://www.hse.ru/ba/icef/', 0, 200, '4 года', 'icef_msk')
-        mobility_info('Международный бакалавриат по бизнесу и экономике', 'Нижний Новгород', 'https://nnov.hse.ru/ba/interbac/', '???', '???', '4 года', 'ib_nn')
-        mobility_info('Международный бакалавриат по бизнесу и экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/interbac/', '???', '???', '4 года', 'ib_spb')
-        mobility_info('Мировая экономика', 'Москва', 'https://www.hse.ru/ba/we/', 60, 90, '4 года', 'we_msk')
-        mobility_info('Программа двух дипломов НИУ ВШЭ и РУТ «Экономика и инженерия транспортных систем»', 'Москва', 'https://dd.hse.ru/miit', '???', '???', '4 года', 'miit_msk')
-        mobility_info('Совместная программа по экономике НИУ ВШЭ и РЭШ', 'Москва', 'https://www.hse.ru/ba/nes/', 55, 20, '4 года', 'nes_msk')
-        mobility_info('Экономика', 'Москва', 'https://www.hse.ru/ba/economics/', 110, 90, '4 года', 'eco_msk')
+        mobility_info(ed_spb)
+        mobility_info(icef_msk)
+        mobility_info(ib_nn)
+        mobility_info(ib_spb)
+        mobility_info(we_msk)
+        mobility_info(eco_msk)
         mobility_info('Экономика и анализ данных', 'Москва', 'https://www.hse.ru/ba/eda/', 30, 30, '4 года', 'eda_msk')
         mobility_info('Экономика и бизнес (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/economics/economics/', 0, 40, '4,5 года', 'eco_nn')
         mobility_info('Экономический анализ', 'Москва', 'https://www.hse.ru/ba/ea/', 0, 20, '4 года', 'ea_msk')
@@ -252,18 +316,50 @@ def mobility(message):
         mobility_info('Дизайн', 'Санкт-Петербург', 'https://spb.hse.ru/ba/designs/', 20, 110, '4 года', 'des_spb')
         mobility_info('Дизайн', 'Москва', 'https://design.hse.ru/ba/program/design', 65, 350, '4 года', 'des_msk')
         mobility_info('Мода', 'Москва', 'https://design.hse.ru/ba/program/fashion', 0, 80, '4 года', 'fash_msk')
-
+is_submitted = False
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
-    for i in range(-4,0):
-        bot.delete_message(call.chatid,call.messageid-1)
-    try:
-        if call.message:
-            if call.data == "se_msk":
-                bot.send_message(call.message.chat.id, 'Вы успешно записались на обрзовательную программу "Програмная инженерия" в городе Москва!')
-            if call.data == "se_nn":
-                bot.send_message(call.message.chat.id, 'Вы успешно записались на обрзовательную программу "Программная инженерия (очно-заочное обучение)" в городе Нижний Новгород!')
-    except Exception as e:
-        print(repr(e))
-    bot.send_message(call.message.chat.id, 'Или нет...')
+    #функция для записи данных в таблицу
+    def fill_table(form_data, mob):
+        global is_submitted
+        worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6], form_data[7], mob[0], mob[1], form_data[8]])
+        bot.send_message(call.message.chat.id, f'Вы успешно записались на обрзовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[8]}!')
+        is_submitted = True
+    #обрабатываем кнопки, записываем данные в таблицу
+    if call.message:
+        if is_submitted: #если уже записались
+            bot.send_message(call.message.chat.id, 'Вы уже записаны! Вы не можете отправить несколько заявок!')
+        else:
+            if call.data == "drip_msk":
+                fill_table(form_data, drip_msk)
+            elif call.data == "cst_nn":
+                fill_table(form_data, cst_nn)
+            elif call.data == "se_msk":
+                fill_table(form_data, se_msk)
+            elif call.data == "se_nn":
+                fill_table(form_data, se_nn)
+            elif call.data == "ait_nn":
+                fill_table(form_data, ait_nn)
+            elif call.data == "bi_msk":
+                fill_table(form_data, bi_msk)
+            elif call.data == "bi_spb":
+                fill_table(form_data, bi_spb)
+            elif call.data == "cst_nn":
+                fill_table(form_data, cst_nn)
+            elif call.data == "dig_msk":
+                fill_table(form_data, dig_msk)
+            elif call.data == "ed_spb":
+                fill_table(form_data, ed_spb)
+            elif call.data == "icef_msk":
+                fill_table(form_data, icef_msk)
+            elif call.data == "ib_nn":
+                fill_table(form_data, ib_nn)
+            elif call.data == "ib_spb":
+                fill_table(form_data, ib_spb)
+            elif call.data == "we_msk":
+                fill_table(form_data, we_msk)
+            elif call.data == "eco_msk":
+                fill_table(form_data, eco_msk)
+            elif call.data == "eda_msk":
+                fill_table(form_data, eda_msk)
 bot.infinity_polling()
