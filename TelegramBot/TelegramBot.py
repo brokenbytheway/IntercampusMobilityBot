@@ -76,7 +76,7 @@ def select_direction(message):
         bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
         bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Разработка инофрмационных систем для бизнеса" разделено на направления "Программная инженерия" и "Бизнес информатика" вследствие разных кодов.', parse_mode='html')
         bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Международный бакалавриат по бизнесу и экономике" разделено на направления "Экономика" и "Менеджмент" вследствие разных кодов.', parse_mode='html')
-    if message.text == '3' or message.text == '4': #направления 3 и 4 курсов
+    elif message.text == '3' or message.text == '4': #направления 3 и 4 курсов
         p1 = types.InlineKeyboardButton('Программная инженерия')
         p2 = types.InlineKeyboardButton('Бизнес-информатика')
         p3 = types.InlineKeyboardButton('История')
@@ -121,39 +121,22 @@ def enter_hsemail(message):
     
     # Запрос корпоративной почты
     bot.send_message(message.chat.id, 'Введите адрес вашей корпоративной почты (учтите, что адрес почты должен оканчиваться на "@edu.hse.ru":')
-    bot.register_next_step_handler(message, enter_rating)
-
-def enter_rating(message):
+    bot.register_next_step_handler(message, was_or_not)
+        
+def was_or_not(message):
     if message.text[-11:] == "@edu.hse.ru": #проверка на правильность ввода корпоративной почты
         # Сохраняем введенное пользователем имя
         form_data.append(message.text)
-    
-        # Запрос рейтинга
-        bot.send_message(message.chat.id, 'Введите ваш рейтинг (например, 7.62):')
-        bot.register_next_step_handler(message, was_or_not)
+        # Узнаём у пользователя, бывал ли он на мобильности ранее
+        markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        btn1= types.KeyboardButton('Да')
+        btn2= types.KeyboardButton('Нет')
+        markup_was.row(btn1,btn2)
+        bot.send_message(message.chat.id, 'Принимали ли вы участие в межкампусной мобильности ранее?', reply_markup=markup_was)
+        bot.register_next_step_handler(message, enter_period)
     else:
         bot.send_message(message.chat.id, 'Адрес вашей корпоративной почты введён некорректно! Повторите ввод. Адрес почты должен оканчиваться на "@edu.hse.ru".')
-        bot.register_next_step_handler(message, enter_rating)
-        
-def was_or_not(message):
-    #Проверяем, корректно ли введён рейтинг пользователем, затем сохраняем его
-    try:
-        if 0 < float(message.text) < 10:
-            form_data.append(message.text)
-        else:
-            bot.send_message(message.chat.id, 'Рейтинг введён некорректно! Повторите ввод. Рейтинг должен быть в диапазоне от 0 до 10, например 7.62')
-            bot.register_next_step_handler(message, confirm_data)
-    except:
-        bot.send_message(message.chat.id, 'Рейтинг введён некорректно! Повторите ввод. Рейтинг должен быть в диапазоне от 0 до 10, например 7.62')
-        bot.register_next_step_handler(message, confirm_data)
-    
-    # Узнаём у пользователя, бывал ли он на мобильности ранее
-    markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1= types.KeyboardButton('Да')
-    btn2= types.KeyboardButton('Нет')
-    markup_was.row(btn1,btn2)
-    bot.send_message(message.chat.id, 'Принимали ли вы участие в межкампусной мобильности ранее?', reply_markup=markup_was)
-    bot.register_next_step_handler(message, enter_period)
+        bot.register_next_step_handler(message, was_or_not)
 
 def enter_period(message):
     # Сохраняем введенный пользователем ответ
@@ -184,9 +167,8 @@ def confirm_data(message):
                         f"Имя: {form_data[3]}\n" \
                         f"Отчество: {form_data[4]}\n" \
                         f"Корпоративная почта: {form_data[5]}\n" \
-                        f"Рейтинг: {form_data[6]}\n" \
-                        f"Посещал ли мобильность ранее: {form_data[7]}\n" \
-                        f"Срок текущей мобильности: {form_data[8]}\n\n" \
+                        f"Посещал ли мобильность ранее: {form_data[6]}\n" \
+                        f"Срок текущей мобильности: {form_data[7]}\n\n" \
                         f"Данные верны?"
     
     # Создание кнопок для подтверждения данных
@@ -196,12 +178,12 @@ def confirm_data(message):
     markup_confirmation.row(yes,no)
     bot.send_message(message.chat.id, confirmation_text, reply_markup=markup_confirmation)
     bot.register_next_step_handler(message, form_is_correct)
-
+is_submitted = False
 def form_is_correct(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
-        # Данные верны
-        #worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6]])
+        global is_submitted
+        is_submitted = False
         mobility(message)
     elif message.text.lower() == 'нет':
         # Данные неверны
@@ -282,8 +264,6 @@ def mobility(message):
                f"*Город: {mob[1]}\n*"
         bot.send_message(message.chat.id, text, reply_markup=markup, parse_mode='Markdown')
         
-    #mobility_info(название программы, город, ссылка на сайт, кол-во бюджетных мест, кол-во платных мест, продолжительность обучения, колбэк дата)  
-
     bot.send_message(message.chat.id, "Исходя из вашего направления, мы можем предложить вам следующие варианты межкампусной мобильности:", reply_markup=types.ReplyKeyboardRemove())
     if form_data[1] == 'Программная инженерия':
         mobility_info(drip_msk)
@@ -340,14 +320,14 @@ def mobility(message):
         mobility_info(des_spb)
         mobility_info(des_msk)
         mobility_info(fash_msk)
-is_submitted = False
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
     #функция для записи данных в таблицу
     def fill_table(form_data, mob):
         global is_submitted
-        worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6], form_data[7], mob[0], mob[1], form_data[8]])
-        bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[8]}!')
+        worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6],  mob[0], mob[1], form_data[7]])
+        bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[7]}!')
         is_submitted = True
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
