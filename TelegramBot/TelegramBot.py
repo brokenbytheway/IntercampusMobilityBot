@@ -214,7 +214,6 @@ def next_command2(message): #переход на следующую команд
 drip_msk = ['Дизайн и разработка информационных продуктов', 'Москва', 'https://www.hse.ru/ba/drip/', 'drip_msk']
 cst_nn = ['Компьютерные науки и технологии', 'Нижний Новгород', 'https://nnov.hse.ru/ba/cst/', 'cst_nn']
 se_msk = ['Программная инженерия', 'Москва', 'https://www.hse.ru/ba/se/', 'se_msk']
-se_nn = ['Программная инженерия (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/bipm/se/', 'se_nn']
 ait_nn = ['Технологии искусственного и дополненного интеллекта', 'Нижний Новгород', 'https://nnov.hse.ru/ba/ait/', 'ait_nn']
 bi_msk = ['Бизнес-информатика', 'Москва', 'https://www.hse.ru/ba/bi/', 'bi_msk']
 bi_spb = ['Бизнес-информатика', 'Санкт-Петербург', 'https://spb.hse.ru/ba/bi/', 'bi_spb']
@@ -227,7 +226,6 @@ ib_spb = ['Международный бакалавриат по бизнесу
 we_msk = ['Мировая экономика', 'Москва', 'https://www.hse.ru/ba/we/', 'we_msk']
 eco_msk = ['Экономика', 'Москва', 'https://www.hse.ru/ba/economics/', 'eco_msk']
 eda_msk = ['Экономика и анализ данных', 'Москва', 'https://www.hse.ru/ba/eda/', 'eda_msk']
-eco_nn = ['Экономика и бизнес (очно-заочное обучение)', 'Нижний Новгород', 'https://nnov.hse.ru/economics/economics/', 'eco_nn']
 ea_msk = ['Экономический анализ', 'Москва', 'https://www.hse.ru/ba/ea/', 'ea_msk']
 ma_msk = ['Маркетинг и рыночная аналитика', 'Москва', 'https://www.hse.ru/ba/marketing/', 'ma_msk']
 ib_spb = ['Международный бакалавриат по бизнесу и экономике', 'Санкт-Петербург', 'https://spb.hse.ru/ba/interbac/', 'ib_spb']
@@ -251,6 +249,7 @@ des_nn = ['Дизайн', 'Нижний Новгород', 'https://design.hse.r
 des_spb = ['Дизайн', 'Санкт-Петербург', 'https://spb.hse.ru/ba/designs/', 'des_spb']
 des_msk = ['Дизайн', 'Москва', 'https://design.hse.ru/ba/program/design', 'des_msk']
 fash_msk = ['Мода', 'Москва', 'https://design.hse.ru/ba/program/fashion', 'fash_msk']
+stat_msk = ['Экономика и статистика', 'Москва', 'https://www.hse.ru/ba/stat/', 'stat_msk']
 # -------------------------------------------------------------------------------------------
 @bot.message_handler(commands=['mobility']) #выбор мобильности
 def mobility(message):
@@ -269,7 +268,6 @@ def mobility(message):
         mobility_info(drip_msk)
         mobility_info(cst_nn)
         mobility_info(se_msk)
-        mobility_info(se_nn)
         mobility_info(ait_nn)
         
     elif form_data[1] == 'Бизнес-информатика':
@@ -286,8 +284,8 @@ def mobility(message):
         mobility_info(we_msk)
         mobility_info(eco_msk)
         mobility_info(eda_msk)
-        mobility_info(eco_nn)
         mobility_info(ea_msk)
+        mobility_info(stat_msk)
     
     elif form_data[1] == 'Менеджмент':
          mobility_info(ma_msk)
@@ -340,8 +338,6 @@ def callback_inline(call): #осуществление записи на моб�
                 fill_table(form_data, cst_nn)
             elif call.data == "se_msk":
                 fill_table(form_data, se_msk)
-            elif call.data == "se_nn":
-                fill_table(form_data, se_nn)
             elif call.data == "ait_nn":
                 fill_table(form_data, ait_nn)
             elif call.data == "bi_msk":
@@ -366,8 +362,6 @@ def callback_inline(call): #осуществление записи на моб�
                 fill_table(form_data, eco_msk)
             elif call.data == "eda_msk":
                 fill_table(form_data, eda_msk)
-            elif call.data == "eco_nn":
-                fill_table(form_data, eco_nn)
             elif call.data == "ea_msk":
                 fill_table(form_data, ea_msk)
             elif call.data == "ma_msk":
@@ -414,4 +408,6 @@ def callback_inline(call): #осуществление записи на моб�
                 fill_table(form_data, des_msk)
             elif call.data == "fash_msk":
                 fill_table(form_data, fash_msk)
+            elif call.data == "stat_msk":
+                fill_table(form_data, stat_msk)
 bot.infinity_polling()
