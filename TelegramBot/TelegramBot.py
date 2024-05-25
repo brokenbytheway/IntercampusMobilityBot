@@ -2,7 +2,7 @@ import telebot
 import gspread
 from telebot import types
 
-bot = telebot.TeleBot('7162103985:AAEimCQMejkVTqVvcyLul-nZTHVn8wWfOyA')
+bot = telebot.TeleBot('7037301667:AAHAflz1Bl0vW7KDGc46FtopxFeRIdt445A')
 
 credentials = gspread.service_account(filename='credentials.json') 
 sheet = credentials.open_by_key('1BCzJ14uwHL9cCjReBrcIggh1rYhsZIYlm8R8CUe6o5Q')
