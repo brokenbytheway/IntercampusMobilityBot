@@ -146,12 +146,18 @@ def enter_period(message):
     # Узнаём у пользователя, на какой срок он собирается на мобильность
     markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     if form_data[0] == '4': 
+        btn0= types.KeyboardButton('1 модуль')
         btn1= types.KeyboardButton('2 модуля')
         btn2= types.KeyboardButton('3 модуля')
+        markup_was.row(btn0,btn1)
+        markup_was.row(btn2)
     else:
+        btn0= types.KeyboardButton('1 модуль')
         btn1= types.KeyboardButton('2 модуля')
+        btn3= types.KeyboardButton('3 модуля')
         btn2= types.KeyboardButton('4 модуля')
-    markup_was.row(btn1,btn2)
+        markup_was.row(btn0,btn1)
+        markup_was.row(btn3,btn2)
     bot.send_message(message.chat.id, 'На какой срок вы собираетесь отправиться на мобильность?', reply_markup=markup_was)
     bot.register_next_step_handler(message, confirm_data)
         
@@ -178,7 +184,6 @@ def confirm_data(message):
     markup_confirmation.row(yes,no)
     bot.send_message(message.chat.id, confirmation_text, reply_markup=markup_confirmation)
     bot.register_next_step_handler(message, form_is_correct)
-is_submitted = False
 def form_is_correct(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
@@ -323,91 +328,86 @@ def mobility(message):
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
     #функция для записи данных в таблицу
     def fill_table(form_data, mob):
-        global is_submitted
         worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6],  mob[0], mob[1], form_data[7]])
         bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[7]}!')
-        is_submitted = True
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
-        if is_submitted: #если уже записались
-            bot.send_message(call.message.chat.id, 'Вы уже записаны! Вы не можете отправить несколько заявок!')
-        else:
-            if call.data == "drip_msk":
-                fill_table(form_data, drip_msk)
-            elif call.data == "cst_nn":
-                fill_table(form_data, cst_nn)
-            elif call.data == "se_msk":
-                fill_table(form_data, se_msk)
-            elif call.data == "ait_nn":
-                fill_table(form_data, ait_nn)
-            elif call.data == "bi_msk":
-                fill_table(form_data, bi_msk)
-            elif call.data == "bi_spb":
-                fill_table(form_data, bi_spb)
-            elif call.data == "cst_nn":
-                fill_table(form_data, cst_nn)
-            elif call.data == "dig_msk":
-                fill_table(form_data, dig_msk)
-            elif call.data == "ed_spb":
-                fill_table(form_data, ed_spb)
-            elif call.data == "icef_msk":
-                fill_table(form_data, icef_msk)
-            elif call.data == "ib_nn":
-                fill_table(form_data, ib_nn)
-            elif call.data == "ib_spb":
-                fill_table(form_data, ib_spb)
-            elif call.data == "we_msk":
-                fill_table(form_data, we_msk)
-            elif call.data == "eco_msk":
-                fill_table(form_data, eco_msk)
-            elif call.data == "eda_msk":
-                fill_table(form_data, eda_msk)
-            elif call.data == "ea_msk":
-                fill_table(form_data, ea_msk)
-            elif call.data == "ma_msk":
-                fill_table(form_data, ma_msk)
-            elif call.data == "ib_spb":
-                fill_table(form_data, ib_spb)
-            elif call.data == "ib_nn":
-                fill_table(form_data, ib_nn)
-            elif call.data == "ib_msk":
-                fill_table(form_data, ib_msk)
-            elif call.data == "bba_msk":
-                fill_table(form_data, bba_msk)
-            elif call.data == "bu_spb":
-                fill_table(form_data, bu_spb)
-            elif call.data == "log_msk":
-                fill_table(form_data, log_msk)
-            elif call.data == "dm_nn":
-                fill_table(form_data, dm_nn)
-            elif call.data == "ant_msk":
-                fill_table(form_data, ant_msk)
-            elif call.data == "his_spb":
-                fill_table(form_data, his_spb)
-            elif call.data == "his_msk":
-                fill_table(form_data, his_msk)
-            elif call.data == "law_msk":
-                fill_table(form_data, law_msk)
-            elif call.data == "law_nn":
-                fill_table(form_data, law_nn)
-            elif call.data == "law_spb":
-                fill_table(form_data, law_spb)
-            elif call.data == "dop_msk":
-                fill_table(form_data, dop_msk)
-            elif call.data == "dl_msk":
-                fill_table(form_data, dl_msk)
-            elif call.data == "ibc_nn":
-                fill_table(form_data, ibc_nn)
-            elif call.data == "la_msk":
-                fill_table(form_data, la_msk)
-            elif call.data == "des_nn":
-                fill_table(form_data, des_nn)
-            elif call.data == "des_spb":
-                fill_table(form_data, des_spb)
-            elif call.data == "des_msk":
-                fill_table(form_data, des_msk)
-            elif call.data == "fash_msk":
-                fill_table(form_data, fash_msk)
-            elif call.data == "stat_msk":
-                fill_table(form_data, stat_msk)
+        if call.data == "drip_msk":
+            fill_table(form_data, drip_msk)
+        elif call.data == "cst_nn":
+            fill_table(form_data, cst_nn)
+        elif call.data == "se_msk":
+            fill_table(form_data, se_msk)
+        elif call.data == "ait_nn":
+            fill_table(form_data, ait_nn)
+        elif call.data == "bi_msk":
+            fill_table(form_data, bi_msk)
+        elif call.data == "bi_spb":
+            fill_table(form_data, bi_spb)
+        elif call.data == "cst_nn":
+            fill_table(form_data, cst_nn)
+        elif call.data == "dig_msk":
+            fill_table(form_data, dig_msk)
+        elif call.data == "ed_spb":
+            fill_table(form_data, ed_spb)
+        elif call.data == "icef_msk":
+            fill_table(form_data, icef_msk)
+        elif call.data == "ib_nn":
+            fill_table(form_data, ib_nn)
+        elif call.data == "ib_spb":
+            fill_table(form_data, ib_spb)
+        elif call.data == "we_msk":
+            fill_table(form_data, we_msk)
+        elif call.data == "eco_msk":
+            fill_table(form_data, eco_msk)
+        elif call.data == "eda_msk":
+            fill_table(form_data, eda_msk)
+        elif call.data == "ea_msk":
+            fill_table(form_data, ea_msk)
+        elif call.data == "ma_msk":
+            fill_table(form_data, ma_msk)
+        elif call.data == "ib_spb":
+            fill_table(form_data, ib_spb)
+        elif call.data == "ib_nn":
+            fill_table(form_data, ib_nn)
+        elif call.data == "ib_msk":
+            fill_table(form_data, ib_msk)
+        elif call.data == "bba_msk":
+            fill_table(form_data, bba_msk)
+        elif call.data == "bu_spb":
+            fill_table(form_data, bu_spb)
+        elif call.data == "log_msk":
+            fill_table(form_data, log_msk)
+        elif call.data == "dm_nn":
+            fill_table(form_data, dm_nn)
+        elif call.data == "ant_msk":
+            fill_table(form_data, ant_msk)
+        elif call.data == "his_spb":
+            fill_table(form_data, his_spb)
+        elif call.data == "his_msk":
+            fill_table(form_data, his_msk)
+        elif call.data == "law_msk":
+            fill_table(form_data, law_msk)
+        elif call.data == "law_nn":
+            fill_table(form_data, law_nn)
+        elif call.data == "law_spb":
+            fill_table(form_data, law_spb)
+        elif call.data == "dop_msk":
+            fill_table(form_data, dop_msk)
+        elif call.data == "dl_msk":
+            fill_table(form_data, dl_msk)
+        elif call.data == "ibc_nn":
+            fill_table(form_data, ibc_nn)
+        elif call.data == "la_msk":
+            fill_table(form_data, la_msk)
+        elif call.data == "des_nn":
+            fill_table(form_data, des_nn)
+        elif call.data == "des_spb":
+            fill_table(form_data, des_spb)
+        elif call.data == "des_msk":
+            fill_table(form_data, des_msk)
+        elif call.data == "fash_msk":
+            fill_table(form_data, fash_msk)
+        elif call.data == "stat_msk":
+            fill_table(form_data, stat_msk)
 bot.infinity_polling()
