@@ -8,11 +8,14 @@ credentials = gspread.service_account(filename='credentials.json')
 sheet = credentials.open_by_key('1BCzJ14uwHL9cCjReBrcIggh1rYhsZIYlm8R8CUe6o5Q')
 worksheet = sheet.sheet1
 
-# Массив для хранения данных анкеты
-form_data = []
+# Словарь для хранения данных, специфичных для пользователя
+user_data = {}
 
 @bot.message_handler(commands=['start', 'back']) #главное меню
 def start(message):
+    # Инициализация данных, специфичных для пользователя
+    user_data[message.chat.id] = []
+    
     # Приветственное сообщение и создание кнопки для заполнения анкеты
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     btn1 = types.KeyboardButton('Заполнить анкету')
@@ -53,8 +56,8 @@ def select_course(message):
     
     
 def select_direction(message):
-    # Сохраняем выбранный пользователем курс
-    form_data.append(message.text)
+    # Сохранение выбранного курса пользователя
+    user_data[message.chat.id].append(message.text)
     
     # Создание кнопок для выбора направления
     markup_direction = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
@@ -92,32 +95,32 @@ def select_direction(message):
     bot.register_next_step_handler(message, enter_lastname)
 
 def enter_lastname(message):
-    # Сохраняем выбранное пользователем направление
-    form_data.append(message.text)
+    # Сохранение выбранного направления пользователя
+    user_data[message.chat.id].append(message.text)
     
     # Запрос фамилии
     bot.send_message(message.chat.id, 'Введите вашу фамилию:', reply_markup=types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, enter_firstname)
 
 def enter_firstname(message):
-    # Сохраняем введенную пользователем фамилию
-    form_data.append(message.text)
+    # Сохранение фамилии пользователя
+    user_data[message.chat.id].append(message.text)
     
     # Запрос имени
     bot.send_message(message.chat.id, 'Введите ваше имя:')
     bot.register_next_step_handler(message, enter_secondname)
 
 def enter_secondname(message):
-    # Сохраняем введенное пользователем имя
-    form_data.append(message.text)
+    # Сохранение имени пользователя
+    user_data[message.chat.id].append(message.text)
     
     # Запрос отчества
     bot.send_message(message.chat.id, 'Введите ваше отчество:')
     bot.register_next_step_handler(message, enter_hsemail)
 
 def enter_hsemail(message):
-    # Сохраняем введенное пользователем отчество
-    form_data.append(message.text)
+    # Сохранение отчества пользователя
+    user_data[message.chat.id].append(message.text)
     
     # Запрос корпоративной почты
     bot.send_message(message.chat.id, 'Введите адрес вашей корпоративной почты (учтите, что адрес почты должен оканчиваться на "@edu.hse.ru":')
@@ -125,8 +128,8 @@ def enter_hsemail(message):
         
 def was_or_not(message):
     if message.text[-11:] == "@edu.hse.ru": #проверка на правильность ввода корпоративной почты
-        # Сохраняем введенное пользователем имя
-        form_data.append(message.text)
+        # Сохранение корпоративной почты пользователя
+        user_data[message.chat.id].append(message.text)
         # Узнаём у пользователя, бывал ли он на мобильности ранее
         markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
         btn1= types.KeyboardButton('Да')
@@ -139,13 +142,13 @@ def was_or_not(message):
         bot.register_next_step_handler(message, was_or_not)
 
 def enter_period(message):
-    # Сохраняем введенный пользователем ответ
-    form_data.append(message.text)
+    # Сохранение ответа пользователя о предыдущем участии в мобильности
+    user_data[message.chat.id].append(message.text)
     if message.text == 'Да':
         bot.send_message(message.chat.id, 'Учтите, что при отборе студентов на мобильность высшим приоритетом обладают студенты, ранее не принимавшие участие в мобильности')
     # Узнаём у пользователя, на какой срок он собирается на мобильность
     markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    if form_data[0] == '4': 
+    if user_data[message.chat.id][0] == '4': 
         btn0= types.KeyboardButton('1 модуль')
         btn1= types.KeyboardButton('2 модуля')
         btn2= types.KeyboardButton('3 модуля')
@@ -163,18 +166,18 @@ def enter_period(message):
         
 
 def confirm_data(message):
-    # Сохраняем введенный пользователем ответ
-    form_data.append(message.text)
+    # Сохранение выбранного срока мобильности пользователя
+    user_data[message.chat.id].append(message.text)
     # Вывод анкеты для проверки
     confirmation_text = f"Ваша анкета:\n\n" \
-                        f"Курс: {form_data[0]}\n" \
-                        f"Направление: {form_data[1]}\n" \
-                        f"Фамилия: {form_data[2]}\n" \
-                        f"Имя: {form_data[3]}\n" \
-                        f"Отчество: {form_data[4]}\n" \
-                        f"Корпоративная почта: {form_data[5]}\n" \
-                        f"Посещал ли мобильность ранее: {form_data[6]}\n" \
-                        f"Срок текущей мобильности: {form_data[7]}\n\n" \
+                        f"Курс: {user_data[message.chat.id][0]}\n" \
+                        f"Направление: {user_data[message.chat.id][1]}\n" \
+                        f"Фамилия: {user_data[message.chat.id][2]}\n" \
+                        f"Имя: {user_data[message.chat.id][3]}\n" \
+                        f"Отчество: {user_data[message.chat.id][4]}\n" \
+                        f"Корпоративная почта: {user_data[message.chat.id][5]}\n" \
+                        f"Посещал ли мобильность ранее: {user_data[message.chat.id][6]}\n" \
+                        f"Срок текущей мобильности: {user_data[message.chat.id][7]}\n\n" \
                         f"Данные верны?"
     
     # Создание кнопок для подтверждения данных
@@ -193,7 +196,7 @@ def form_is_correct(message):
     elif message.text.lower() == 'нет':
         # Данные неверны
         bot.send_message(message.chat.id, 'Пожалуйста, введите данные заново.')
-        form_data.clear()
+        user_data[message.chat.id].clear()
         select_course(message)
         
 @bot.message_handler(commands=['help']) #помощь
@@ -269,19 +272,19 @@ def mobility(message):
         bot.send_message(message.chat.id, text, reply_markup=markup, parse_mode='Markdown')
         
     bot.send_message(message.chat.id, "Исходя из вашего направления, мы можем предложить вам следующие варианты межкампусной мобильности:", reply_markup=types.ReplyKeyboardRemove())
-    if form_data[1] == 'Программная инженерия':
+    if user_data[message.chat.id][1] == 'Программная инженерия':
         mobility_info(drip_msk)
         mobility_info(cst_nn)
         mobility_info(se_msk)
         mobility_info(ait_nn)
         
-    elif form_data[1] == 'Бизнес-информатика':
+    elif user_data[message.chat.id][1] == 'Бизнес-информатика':
         mobility_info(bi_msk)
         mobility_info(bi_spb)
         mobility_info(cst_nn)
         mobility_info(dig_msk)
 
-    elif form_data[1] == 'Экономика':
+    elif user_data[message.chat.id][1] == 'Экономика':
         mobility_info(ed_spb)
         mobility_info(icef_msk)
         mobility_info(ib_nn)
@@ -292,7 +295,7 @@ def mobility(message):
         mobility_info(ea_msk)
         mobility_info(stat_msk)
     
-    elif form_data[1] == 'Менеджмент':
+    elif user_data[message.chat.id][1] == 'Менеджмент':
          mobility_info(ma_msk)
          mobility_info(ib_spb)
          mobility_info(ib_nn)
@@ -302,23 +305,23 @@ def mobility(message):
          mobility_info(log_msk)
          mobility_info(dm_nn)
 
-    elif form_data[1] == 'История':
+    elif user_data[message.chat.id][1] == 'История':
         mobility_info(ant_msk)
         mobility_info(his_spb)
         mobility_info(his_msk)
 
-    elif form_data[1] == 'Юриспруденция':
+    elif user_data[message.chat.id][1] == 'Юриспруденция':
         mobility_info(law_msk)
         mobility_info(law_nn)
         mobility_info(law_spb)
         mobility_info(dop_msk)
         mobility_info(dl_msk)
 
-    elif form_data[1] == 'Лингвистика':
+    elif user_data[message.chat.id][1] == 'Лингвистика':
         mobility_info(ibc_nn)
         mobility_info(la_msk)
         
-    elif form_data[1] == 'Дизайн':
+    elif user_data[message.chat.id][1] == 'Дизайн':
         mobility_info(des_nn)
         mobility_info(des_spb)
         mobility_info(des_msk)
@@ -328,86 +331,86 @@ def mobility(message):
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
     #функция для записи данных в таблицу
     def fill_table(form_data, mob):
-        worksheet.append_row([form_data[0], form_data[1], form_data[2], form_data[3], form_data[4], form_data[5], form_data[6],  mob[0], mob[1], form_data[7]])
+        worksheet.append_row([user_data[call.message.chat.id][0], user_data[call.message.chat.id][1], user_data[call.message.chat.id][2], user_data[call.message.chat.id][3], user_data[call.message.chat.id][4], user_data[call.message.chat.id][5], user_data[call.message.chat.id][6],  mob[0], mob[1], user_data[call.message.chat.id][7]])
         bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[7]}!')
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
         if call.data == "drip_msk":
-            fill_table(form_data, drip_msk)
+            fill_table(user_data[call.message.chat.id], drip_msk)
         elif call.data == "cst_nn":
-            fill_table(form_data, cst_nn)
+            fill_table(user_data[call.message.chat.id], cst_nn)
         elif call.data == "se_msk":
-            fill_table(form_data, se_msk)
+            fill_table(user_data[call.message.chat.id], se_msk)
         elif call.data == "ait_nn":
-            fill_table(form_data, ait_nn)
+            fill_table(user_data[call.message.chat.id], ait_nn)
         elif call.data == "bi_msk":
-            fill_table(form_data, bi_msk)
+            fill_table(user_data[call.message.chat.id], bi_msk)
         elif call.data == "bi_spb":
-            fill_table(form_data, bi_spb)
+            fill_table(user_data[call.message.chat.id], bi_spb)
         elif call.data == "cst_nn":
-            fill_table(form_data, cst_nn)
+            fill_table(user_data[call.message.chat.id], cst_nn)
         elif call.data == "dig_msk":
-            fill_table(form_data, dig_msk)
+            fill_table(user_data[call.message.chat.id], dig_msk)
         elif call.data == "ed_spb":
-            fill_table(form_data, ed_spb)
+            fill_table(user_data[call.message.chat.id], ed_spb)
         elif call.data == "icef_msk":
-            fill_table(form_data, icef_msk)
+            fill_table(user_data[call.message.chat.id], icef_msk)
         elif call.data == "ib_nn":
-            fill_table(form_data, ib_nn)
+            fill_table(user_data[call.message.chat.id], ib_nn)
         elif call.data == "ib_spb":
-            fill_table(form_data, ib_spb)
+            fill_table(user_data[call.message.chat.id], ib_spb)
         elif call.data == "we_msk":
-            fill_table(form_data, we_msk)
+            fill_table(user_data[call.message.chat.id], we_msk)
         elif call.data == "eco_msk":
-            fill_table(form_data, eco_msk)
+            fill_table(user_data[call.message.chat.id], eco_msk)
         elif call.data == "eda_msk":
-            fill_table(form_data, eda_msk)
+            fill_table(user_data[call.message.chat.id], eda_msk)
         elif call.data == "ea_msk":
-            fill_table(form_data, ea_msk)
+            fill_table(user_data[call.message.chat.id], ea_msk)
         elif call.data == "ma_msk":
-            fill_table(form_data, ma_msk)
+            fill_table(user_data[call.message.chat.id], ma_msk)
         elif call.data == "ib_spb":
-            fill_table(form_data, ib_spb)
+            fill_table(user_data[call.message.chat.id], ib_spb)
         elif call.data == "ib_nn":
-            fill_table(form_data, ib_nn)
+            fill_table(user_data[call.message.chat.id], ib_nn)
         elif call.data == "ib_msk":
-            fill_table(form_data, ib_msk)
+            fill_table(user_data[call.message.chat.id], ib_msk)
         elif call.data == "bba_msk":
-            fill_table(form_data, bba_msk)
+            fill_table(user_data[call.message.chat.id], bba_msk)
         elif call.data == "bu_spb":
-            fill_table(form_data, bu_spb)
+            fill_table(user_data[call.message.chat.id], bu_spb)
         elif call.data == "log_msk":
-            fill_table(form_data, log_msk)
+            fill_table(user_data[call.message.chat.id], log_msk)
         elif call.data == "dm_nn":
-            fill_table(form_data, dm_nn)
+            fill_table(user_data[call.message.chat.id], dm_nn)
         elif call.data == "ant_msk":
-            fill_table(form_data, ant_msk)
+            fill_table(user_data[call.message.chat.id], ant_msk)
         elif call.data == "his_spb":
-            fill_table(form_data, his_spb)
+            fill_table(user_data[call.message.chat.id], his_spb)
         elif call.data == "his_msk":
-            fill_table(form_data, his_msk)
+            fill_table(user_data[call.message.chat.id], his_msk)
         elif call.data == "law_msk":
-            fill_table(form_data, law_msk)
+            fill_table(user_data[call.message.chat.id], law_msk)
         elif call.data == "law_nn":
-            fill_table(form_data, law_nn)
+            fill_table(user_data[call.message.chat.id], law_nn)
         elif call.data == "law_spb":
-            fill_table(form_data, law_spb)
+            fill_table(user_data[call.message.chat.id], law_spb)
         elif call.data == "dop_msk":
-            fill_table(form_data, dop_msk)
+            fill_table(user_data[call.message.chat.id], dop_msk)
         elif call.data == "dl_msk":
-            fill_table(form_data, dl_msk)
+            fill_table(user_data[call.message.chat.id], dl_msk)
         elif call.data == "ibc_nn":
-            fill_table(form_data, ibc_nn)
+            fill_table(user_data[call.message.chat.id], ibc_nn)
         elif call.data == "la_msk":
-            fill_table(form_data, la_msk)
+            fill_table(user_data[call.message.chat.id], la_msk)
         elif call.data == "des_nn":
-            fill_table(form_data, des_nn)
+            fill_table(user_data[call.message.chat.id], des_nn)
         elif call.data == "des_spb":
-            fill_table(form_data, des_spb)
+            fill_table(user_data[call.message.chat.id], des_spb)
         elif call.data == "des_msk":
-            fill_table(form_data, des_msk)
+            fill_table(user_data[call.message.chat.id], des_msk)
         elif call.data == "fash_msk":
-            fill_table(form_data, fash_msk)
+            fill_table(user_data[call.message.chat.id], fash_msk)
         elif call.data == "stat_msk":
-            fill_table(form_data, stat_msk)
+            fill_table(user_data[call.message.chat.id], stat_msk)
 bot.infinity_polling()
