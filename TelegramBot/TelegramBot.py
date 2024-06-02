@@ -333,6 +333,7 @@ def callback_inline(call): #осуществление записи на моб�
     def fill_table(form_data, mob):
         worksheet.append_row([user_data[call.message.chat.id][0], user_data[call.message.chat.id][1], user_data[call.message.chat.id][2], user_data[call.message.chat.id][3], user_data[call.message.chat.id][4], user_data[call.message.chat.id][5], user_data[call.message.chat.id][6],  mob[0], mob[1], user_data[call.message.chat.id][7]])
         bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[7]}!')
+        bot.send_message(call.message.chat.id, 'Вы можете записаться на ещё одну программу или вернуться в главное меню по команде /start')
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
         if call.data == "drip_msk":
