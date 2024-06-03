@@ -28,6 +28,8 @@ def start(message):
         bot.send_message(message.chat.id, 'Готовы заполнить анкету? Тогда вперёд!', reply_markup=markup)
     elif message.text.lower() == 'да':
         bot.send_message(message.chat.id, 'Спасибо, ваша анкета успешно заполнена!', reply_markup=markup)
+    elif message.text == '/back':
+        bot.send_message(message.chat.id, 'Теперь вы можете заполнить новую анкету!', reply_markup=markup)
     else:
         bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям', reply_markup=markup)
         
@@ -190,8 +192,6 @@ def confirm_data(message):
 def form_is_correct(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
-        global is_submitted
-        is_submitted = False
         mobility(message)
     elif message.text.lower() == 'нет':
         # Данные неверны
@@ -326,6 +326,7 @@ def mobility(message):
         mobility_info(des_spb)
         mobility_info(des_msk)
         mobility_info(fash_msk)
+    bot.send_message(message.chat.id, 'Вы можете записаться сразу на несколько мобильностей')
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
@@ -333,7 +334,10 @@ def callback_inline(call): #осуществление записи на моб�
     def fill_table(form_data, mob):
         worksheet.append_row([user_data[call.message.chat.id][0], user_data[call.message.chat.id][1], user_data[call.message.chat.id][2], user_data[call.message.chat.id][3], user_data[call.message.chat.id][4], user_data[call.message.chat.id][5], user_data[call.message.chat.id][6],  mob[0], mob[1], user_data[call.message.chat.id][7]])
         bot.send_message(call.message.chat.id, f'Вы успешно записались на образовательную программу "{mob[0]}" в городе {mob[1]} на срок в {form_data[7]}!')
-        bot.send_message(call.message.chat.id, 'Вы можете записаться на ещё одну программу или вернуться в главное меню по команде /start')
+        markup_back = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        markup_back.add(types.KeyboardButton('/back'))
+        bot.send_message(call.message.chat.id, 'Вы можете записаться на ещё одну программу или вернуться в главное меню по кнопке /back', reply_markup=markup_back)
+        
     #обрабатываем кнопки, записываем данные в таблицу
     if call.message:
         if call.data == "drip_msk":
