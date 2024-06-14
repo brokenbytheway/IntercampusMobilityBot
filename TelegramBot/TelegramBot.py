@@ -23,7 +23,7 @@ def start(message):
     markup.add(btn1).add(btn2)
     if message.text == '/start':
         bot.send_message(message.chat.id, 'Привет! Я бот для заполнения анкеты на межкампусную мобильность.', reply_markup=markup)
-        bot.send_message(message.chat.id, 'Перед заполнением анкеты рекомендуется прочитать полезную информацию по кнопке "Помощь"')
+        bot.send_message(message.chat.id, 'Перед заполнением анкеты рекомендуется прочитать полезную информацию по кнопке "Помощь".')
     elif message.text == 'Назад':
         bot.send_message(message.chat.id, 'Готовы заполнить анкету? Тогда вперёд!', reply_markup=markup)
     elif message.text.lower() == 'да':
@@ -31,7 +31,7 @@ def start(message):
     elif message.text == '/back':
         bot.send_message(message.chat.id, 'Теперь вы можете заполнить новую анкету!', reply_markup=markup)
     else:
-        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям.', reply_markup=markup)
         
     bot.register_next_step_handler(message, next_command)
     
@@ -58,51 +58,59 @@ def select_course(message):
     
     
 def select_direction(message):
-    # Сохранение выбранного курса пользователя
-    user_data[message.chat.id].append(message.text)
+    if message.text == '1' or message.text == '2' or message.text == '3' or message.text == '4':
+        # Сохранение выбранного курса пользователя
+        user_data[message.chat.id].append(message.text)
     
-    # Создание кнопок для выбора направления
-    markup_direction = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    if message.text == '1' or message.text == '2': #направления 1 и 2 курсов
-        p0 = types.KeyboardButton('Программная инженерия')
-        p1 = types.KeyboardButton('Бизнес-информатика')
-        p2 = types.KeyboardButton('Экономика')
-        p6 = types.KeyboardButton('Менеджмент')
-        p3 = types.KeyboardButton('История')
-        p4 = types.KeyboardButton('Юриспруденция')
-        p7 = types.KeyboardButton('Дизайн')
-        p5 = types.KeyboardButton('Лингвистика')
+        # Создание кнопок для выбора направления
+        markup_direction = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        if message.text == '1' or message.text == '2': #направления 1 и 2 курсов
+            p0 = types.KeyboardButton('Программная инженерия')
+            p1 = types.KeyboardButton('Бизнес-информатика')
+            p2 = types.KeyboardButton('Экономика')
+            p6 = types.KeyboardButton('Менеджмент')
+            p3 = types.KeyboardButton('История')
+            p4 = types.KeyboardButton('Юриспруденция')
+            p7 = types.KeyboardButton('Дизайн')
+            p5 = types.KeyboardButton('Лингвистика')
         
         
-        markup_direction.row(p0,p1)
-        markup_direction.row(p2,p6)
-        markup_direction.row(p3,p4)
-        markup_direction.row(p5,p7)
-        bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
-        bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Разработка инофрмационных систем для бизнеса" разделено на направления "Программная инженерия" и "Бизнес информатика" вследствие разных кодов.', parse_mode='html')
-        bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Международный бакалавриат по бизнесу и экономике" разделено на направления "Экономика" и "Менеджмент" вследствие разных кодов.', parse_mode='html')
-    elif message.text == '3' or message.text == '4': #направления 3 и 4 курсов
-        p1 = types.InlineKeyboardButton('Программная инженерия')
-        p2 = types.InlineKeyboardButton('Бизнес-информатика')
-        p3 = types.InlineKeyboardButton('История')
-        p4 = types.InlineKeyboardButton('Юриспруденция')
-        p5 = types.InlineKeyboardButton('Лингвистика')
-        p6 = types.InlineKeyboardButton('Экономика')
-        p8 = types.InlineKeyboardButton('Дизайн')
-        markup_direction.row(p1,p2)
-        markup_direction.row(p6,p8)
-        markup_direction.row(p3,p4)
-        markup_direction.row(p5)
-        bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
-    bot.register_next_step_handler(message, enter_lastname)
+            markup_direction.row(p0,p1)
+            markup_direction.row(p2,p6)
+            markup_direction.row(p3,p4)
+            markup_direction.row(p5,p7)
+            bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
+            bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Разработка инофрмационных систем для бизнеса" разделено на направления "Программная инженерия" и "Бизнес информатика" вследствие разных кодов.', parse_mode='html')
+            bot.send_message(message.chat.id, '<b><u>Важно!</u></b> Направление "Международный бакалавриат по бизнесу и экономике" разделено на направления "Экономика" и "Менеджмент" вследствие разных кодов.', parse_mode='html')
+        elif message.text == '3' or message.text == '4': #направления 3 и 4 курсов
+            p1 = types.InlineKeyboardButton('Программная инженерия')
+            p2 = types.InlineKeyboardButton('Бизнес-информатика')
+            p3 = types.InlineKeyboardButton('История')
+            p4 = types.InlineKeyboardButton('Юриспруденция')
+            p5 = types.InlineKeyboardButton('Лингвистика')
+            p6 = types.InlineKeyboardButton('Экономика')
+            p8 = types.InlineKeyboardButton('Дизайн')
+            markup_direction.row(p1,p2)
+            markup_direction.row(p6,p8)
+            markup_direction.row(p3,p4)
+            markup_direction.row(p5)
+            bot.send_message(message.chat.id, 'Выберите ваше направление:', reply_markup=markup_direction)
+        bot.register_next_step_handler(message, enter_lastname)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, выберите один из представленных вариантов ответа.')
+        bot.register_next_step_handler(message, select_direction)
 
 def enter_lastname(message):
-    # Сохранение выбранного направления пользователя
-    user_data[message.chat.id].append(message.text)
+    if message.text == 'Программная инженерия' or message.text == 'Бизнес-информатика' or message.text == 'Экономика' or message.text == 'Менеджмент' or message.text == 'История' or message.text == 'Юриспруденция' or message.text == 'Дизайн' or message.text == 'Лингвистика':
+        # Сохранение выбранного направления пользователя
+        user_data[message.chat.id].append(message.text)
     
-    # Запрос фамилии
-    bot.send_message(message.chat.id, 'Введите вашу фамилию:', reply_markup=types.ReplyKeyboardRemove())
-    bot.register_next_step_handler(message, enter_firstname)
+        # Запрос фамилии
+        bot.send_message(message.chat.id, 'Введите вашу фамилию:', reply_markup=types.ReplyKeyboardRemove())
+        bot.register_next_step_handler(message, enter_firstname)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, выберите один из представленных вариантов ответа.')
+        bot.register_next_step_handler(message, enter_lastname)
 
 def enter_firstname(message):
     # Сохранение фамилии пользователя
@@ -144,51 +152,59 @@ def was_or_not(message):
         bot.register_next_step_handler(message, was_or_not)
 
 def enter_period(message):
-    # Сохранение ответа пользователя о предыдущем участии в мобильности
-    user_data[message.chat.id].append(message.text)
-    if message.text == 'Да':
-        bot.send_message(message.chat.id, 'Учтите, что при отборе студентов на мобильность высшим приоритетом обладают студенты, ранее не принимавшие участие в мобильности')
-    # Узнаём у пользователя, на какой срок он собирается на мобильность
-    markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    if user_data[message.chat.id][0] == '4': 
-        btn0= types.KeyboardButton('1 модуль')
-        btn1= types.KeyboardButton('2 модуля')
-        btn2= types.KeyboardButton('3 модуля')
-        markup_was.row(btn0,btn1)
-        markup_was.row(btn2)
+    if message.text == 'Да' or message.text == 'Нет':
+        # Сохранение ответа пользователя о предыдущем участии в мобильности
+        user_data[message.chat.id].append(message.text)
+        if message.text == 'Да':
+            bot.send_message(message.chat.id, 'Учтите, что при отборе студентов на мобильность высшим приоритетом обладают студенты, ранее не принимавшие участие в мобильности.')
+        # Узнаём у пользователя, на какой срок он собирается на мобильность
+        markup_was = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        if user_data[message.chat.id][0] == '4': 
+            btn0= types.KeyboardButton('1 модуль')
+            btn1= types.KeyboardButton('2 модуля')
+            btn2= types.KeyboardButton('3 модуля')
+            markup_was.row(btn0,btn1)
+            markup_was.row(btn2)
+        else:
+            btn0= types.KeyboardButton('1 модуль')
+            btn1= types.KeyboardButton('2 модуля')
+            btn3= types.KeyboardButton('3 модуля')
+            btn2= types.KeyboardButton('4 модуля')
+            markup_was.row(btn0,btn1)
+            markup_was.row(btn3,btn2)
+        bot.send_message(message.chat.id, 'На какой срок вы собираетесь отправиться на мобильность?', reply_markup=markup_was)
+        bot.register_next_step_handler(message, confirm_data)
     else:
-        btn0= types.KeyboardButton('1 модуль')
-        btn1= types.KeyboardButton('2 модуля')
-        btn3= types.KeyboardButton('3 модуля')
-        btn2= types.KeyboardButton('4 модуля')
-        markup_was.row(btn0,btn1)
-        markup_was.row(btn3,btn2)
-    bot.send_message(message.chat.id, 'На какой срок вы собираетесь отправиться на мобильность?', reply_markup=markup_was)
-    bot.register_next_step_handler(message, confirm_data)
+        bot.send_message(message.chat.id, 'Пожалуйста, выберите один из представленных вариантов ответа.')
+        bot.register_next_step_handler(message, enter_period)
         
 
 def confirm_data(message):
-    # Сохранение выбранного срока мобильности пользователя
-    user_data[message.chat.id].append(message.text)
-    # Вывод анкеты для проверки
-    confirmation_text = f"Ваша анкета:\n\n" \
-                        f"Курс: {user_data[message.chat.id][0]}\n" \
-                        f"Направление: {user_data[message.chat.id][1]}\n" \
-                        f"Фамилия: {user_data[message.chat.id][2]}\n" \
-                        f"Имя: {user_data[message.chat.id][3]}\n" \
-                        f"Отчество: {user_data[message.chat.id][4]}\n" \
-                        f"Корпоративная почта: {user_data[message.chat.id][5]}\n" \
-                        f"Посещал ли мобильность ранее: {user_data[message.chat.id][6]}\n" \
-                        f"Срок текущей мобильности: {user_data[message.chat.id][7]}\n\n" \
-                        f"Данные верны?"
+    if message.text == '1 модуль' or message.text == '2 модуля' or message.text == '3 модуля' or message.text == '4 модуля':
+        # Сохранение выбранного срока мобильности пользователя
+        user_data[message.chat.id].append(message.text)
+        # Вывод анкеты для проверки
+        confirmation_text = f"Ваша анкета:\n\n" \
+                            f"Курс: {user_data[message.chat.id][0]}\n" \
+                            f"Направление: {user_data[message.chat.id][1]}\n" \
+                            f"Фамилия: {user_data[message.chat.id][2]}\n" \
+                            f"Имя: {user_data[message.chat.id][3]}\n" \
+                            f"Отчество: {user_data[message.chat.id][4]}\n" \
+                            f"Корпоративная почта: {user_data[message.chat.id][5]}\n" \
+                            f"Посещал ли мобильность ранее: {user_data[message.chat.id][6]}\n" \
+                            f"Срок текущей мобильности: {user_data[message.chat.id][7]}\n\n" \
+                            f"Данные верны?"
     
-    # Создание кнопок для подтверждения данных
-    markup_confirmation = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    yes = types.KeyboardButton('Да')
-    no = types.KeyboardButton('Нет')
-    markup_confirmation.row(yes,no)
-    bot.send_message(message.chat.id, confirmation_text, reply_markup=markup_confirmation)
-    bot.register_next_step_handler(message, form_is_correct)
+        # Создание кнопок для подтверждения данных
+        markup_confirmation = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        yes = types.KeyboardButton('Да')
+        no = types.KeyboardButton('Нет')
+        markup_confirmation.row(yes,no)
+        bot.send_message(message.chat.id, confirmation_text, reply_markup=markup_confirmation)
+        bot.register_next_step_handler(message, form_is_correct)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, выберите один из представленных вариантов ответа.')
+        bot.register_next_step_handler(message, confirm_data)
 def form_is_correct(message):
     # Обработка выбора пользователя
     if message.text.lower() == 'да':
@@ -198,10 +214,13 @@ def form_is_correct(message):
         bot.send_message(message.chat.id, 'Пожалуйста, введите данные заново.')
         user_data[message.chat.id].clear()
         select_course(message)
+    else:
+        bot.send_message(message.chat.id, 'Пожалуйста, выберите один из представленных вариантов ответа.')
+        bot.register_next_step_handler(message, form_is_correct)
         
 @bot.message_handler(commands=['help']) #помощь
 def help_inf(message):
-    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе варианты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Особенно рейтинг! Иначе на мобильность не возьмём. :)'
+    help_info = 'Я бот для заполнения анкеты на межкампусную мобильность. Через меня ты сможешь подать заявку для участия в межкампусной мобильности. Для этого просто начни заполнять анкету. Когда ты выберешь свой курс и направление, я сам предложу тебе варианты, в какой город и на какое направление ты сможешь отправиться. Помни, ты должен честно заполнять все данные! Иначе на мобильность не возьмём. :)'
     feedback = 'Возникли проблемы? Свяжись с разработчиками! \nhttps://t.me/brokenbytheway \nhttps://t.me/dedbezpasportaideneg'
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     btn1 = types.KeyboardButton('Назад')
@@ -210,7 +229,7 @@ def help_inf(message):
         bot.send_message(message.chat.id, help_info, reply_markup=markup)
         bot.send_message(message.chat.id, feedback)
     else:
-        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Пожалуйста, следуйте инструкциям.', reply_markup=markup)
     bot.register_next_step_handler(message, next_command2)
     
 def next_command2(message): #переход на следующую команду
@@ -326,7 +345,7 @@ def mobility(message):
         mobility_info(des_spb)
         mobility_info(des_msk)
         mobility_info(fash_msk)
-    bot.send_message(message.chat.id, 'Вы можете записаться сразу на несколько мобильностей')
+    bot.send_message(message.chat.id, 'Вы можете записаться сразу на несколько мобильностей!')
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call): #осуществление записи на мобильность, здесь нужно реализовать добавление данных о мобильности в таблицу
