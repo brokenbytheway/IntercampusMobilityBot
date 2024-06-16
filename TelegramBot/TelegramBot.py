@@ -133,7 +133,7 @@ def enter_hsemail(message):
     user_data[message.chat.id].append(message.text)
     
     # Запрос корпоративной почты
-    bot.send_message(message.chat.id, 'Введите адрес вашей корпоративной почты (учтите, что адрес почты должен оканчиваться на "@edu.hse.ru":')
+    bot.send_message(message.chat.id, 'Введите адрес вашей корпоративной почты (учтите, что адрес почты должен оканчиваться на "@edu.hse.ru"):')
     bot.register_next_step_handler(message, was_or_not)
         
 def was_or_not(message):
