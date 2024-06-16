@@ -1,5 +1,6 @@
 import telebot
 import gspread
+import re
 from telebot import types
 
 bot = telebot.TeleBot('7037301667:AAHAflz1Bl0vW7KDGc46FtopxFeRIdt445A')
@@ -137,7 +138,8 @@ def enter_hsemail(message):
     bot.register_next_step_handler(message, was_or_not)
         
 def was_or_not(message):
-    if message.text[-11:] == "@edu.hse.ru": #проверка на правильность ввода корпоративной почты
+    pattern = re.compile(r'^[a-zA-Z][a-zA-Z0-9_]*$')
+    if message.text[-11:] == "@edu.hse.ru" and len(message.text) > 11 and pattern.match(message.text[:-11]): #проверка на правильность ввода корпоративной почты
         # Сохранение корпоративной почты пользователя
         user_data[message.chat.id].append(message.text)
         # Узнаём у пользователя, бывал ли он на мобильности ранее
