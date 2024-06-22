@@ -6,7 +6,7 @@ from telebot import types
 bot = telebot.TeleBot('7037301667:AAHAflz1Bl0vW7KDGc46FtopxFeRIdt445A')
 
 credentials = gspread.service_account(filename='credentials.json') 
-sheet = credentials.open_by_key('1BCzJ14uwHL9cCjReBrcIggh1rYhsZIYlm8R8CUe6o5Q')
+sheet = credentials.open_by_key('1RCOah1Q0bGN31btYKX1IlZkwfsIG2kxVh2lJKNJQyA4')
 worksheet = sheet.sheet1
 
 # Словарь для хранения данных, специфичных для пользователя
